@@ -1,8 +1,10 @@
+import Button from "components/Button"
+
+import "./App.scss"
+
 import { useState } from "react"
 
 import reactLogo from "./assets/react.svg"
-import "./App.css"
-import Button from "./components/Button"
 
 import viteLogo from "/vite.svg"
 
@@ -11,7 +13,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className="flex flex-col items-center">
         <a href="https://vite.dev" target="_blank">
           <img alt="Vite logo" className="logo" src={viteLogo} />
         </a>
@@ -24,7 +26,7 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         <Button />
         <p>
-          Edit <code className="text-xl font-bold">src/App.tsx</code> and save to test HMR
+          Edit <code className="rounded-xl bg-green-200 p-4 text-xl font-bold">src/App.tsx</code> and save to test HMR
         </p>
       </div>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
