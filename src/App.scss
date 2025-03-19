@@ -1,0 +1,18 @@
+$color-primary-main: #008080;
+
+main {
+  height: 100vh;
+}
+
+:root {
+  --color-primary-main: #{$color-primary-main};
+  --color-primary-main-50: #{rgba($color-primary-main, 0.3)};
+    --color-primary-main-20: #{rgba($color-primary-main, 0.2)};
+  --color-secondary-main: #003ca6;
+}
+
+.chakra-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
