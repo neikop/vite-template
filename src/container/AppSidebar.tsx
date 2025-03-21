@@ -40,8 +40,8 @@ const MenuItem = ({ icon, name, path }: MenuItemProps) => {
 
 const AppSidebar = () => {
   return (
-    <Stack borderWidth={1} gap={0} gridArea="sidebar" m={2} rounded={16} shadow="inner">
-      <Center gridArea="logo" p={4}>
+    <Stack borderWidth={1} gridArea="sidebar" m={2} py={2} rounded={16} shadow="inner">
+      <Center gridArea="logo" p={2}>
         <Link to={privateRoute.home.path}>
           <Image src="/assets/react.svg" />
         </Link>
