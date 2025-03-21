@@ -1,12 +1,6 @@
-$color-primary-main: #008080;
-
-main {
-  height: 100vh;
+:root {
 }
 
-:root {
-  --color-primary-main: #{$color-primary-main};
-  --color-primary-main-50: #{rgba($color-primary-main, 0.3)};
-  --color-primary-main-20: #{rgba($color-primary-main, 0.2)};
-  --color-secondary-main: #003ca6;
+* {
+  scrollbar-color: var(--global-color-border) transparent;
 }
