@@ -1,8 +1,14 @@
 import { Box } from "@chakra-ui/react"
+import { LoginScreen } from "views/Auth"
 
 const authRoute = {
-  login: {
+  forgotPassword: {
     component: Box,
+    path: "/forgot-password",
+    url: "/auth/forgot-password",
+  },
+  login: {
+    component: LoginScreen,
     path: "/login",
     url: "/auth/login",
   },

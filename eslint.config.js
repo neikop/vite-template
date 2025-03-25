@@ -30,9 +30,11 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "warn",
       "prettier/prettier": "warn",
       "perfectionist/sort-imports": "warn",
+      "perfectionist/sort-modules": "warn",
       "perfectionist/sort-objects": "warn",
       "perfectionist/sort-jsx-props": "warn",
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }]
+      "perfectionist/sort-union-types": "warn",
+      "perfectionist/sort-intersection-types": "warn"
     },
   },
 )

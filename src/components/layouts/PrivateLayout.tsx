@@ -1,9 +1,27 @@
 import { Box, Grid } from "@chakra-ui/react"
 import { AppHeader, AppSidebar } from "components/app"
-import { Navigate, Route, Routes } from "react-router"
-import { privateRoute } from "routes"
+import { useEffect } from "react"
+import { createSearchParams, Navigate, Route, Routes, useLocation, useNavigate } from "react-router"
+import { authRoute, privateRoute } from "routes"
+import { useProfileStore } from "store/profileStore"
 
 const PrivateLayout = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { profile } = useProfileStore()
+
+  useEffect(() => {
+    if (!profile.isLoggedIn) {
+      navigate(
+        {
+          pathname: authRoute.login.url,
+          search: createSearchParams({ callbackUrl: location.pathname }).toString(),
+        },
+        { replace: true },
+      )
+    }
+  }, [profile, location.pathname, navigate])
+
   return (
     <Grid
       as="main"
