@@ -1,5 +1,5 @@
-import { AppProvider } from "container"
-import { AuthLayout, PrivateLayout } from "layouts"
+import { AppProvider } from "components/app"
+import { AuthLayout, PrivateLayout } from "components/layouts"
 import { BrowserRouter, Route, Routes } from "react-router"
 
 function App() {

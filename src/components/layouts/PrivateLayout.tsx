@@ -1,5 +1,5 @@
 import { Box, Grid } from "@chakra-ui/react"
-import { AppHeader, AppSidebar } from "container"
+import { AppHeader, AppSidebar } from "components/app"
 import { Navigate, Route, Routes } from "react-router"
 import { privateRoute } from "routes"
 
