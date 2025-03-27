@@ -1,0 +1,117 @@
+.MuiDataGrid-root {
+  margin: 24px 0px 0px;
+  * {
+    outline: none !important;
+  }
+  .MuiDataGrid-columnHeader,
+  .MuiDataGrid-cell {
+    padding: 8px 16px !important;
+    min-height: 48px !important;
+    font-size: 1rem;
+    &:last-child {
+      border-right-width: 0px;
+    }
+  }
+  .MuiDataGrid-iconButtonContainer {
+    margin-left: auto;
+  }
+  .MuiDataGrid-columnHeaders {
+    background-color: rgba(0, 0, 0, 0.03);
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+    }
+  }
+  .MuiDataGrid-columnHeaderTitle {
+    font-weight: 700;
+  }
+}
+
+.MuiTableContainer-root {
+  margin: 24px 0px;
+
+  .MuiTableRow-root:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  .MuiTableCell-head {
+    padding: 8px 12px;
+    font-weight: 700;
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  .MuiTableCell-body {
+    padding: 12px 12px;
+  }
+}
+.MuiTableBody-root > .MuiTableRow-root:last-child > .MuiTableCell-root {
+  border-bottom: none;
+}
+
+.MuiDialog-root {
+  .MuiDialogTitle-root {
+    font-size: 1.2rem;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  .MuiDialogContent-root {
+    min-height: 120px;
+    padding-top: 24px !important;
+  }
+  .MuiDialogActions-root {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    gap: 4px;
+  }
+}
+
+.MuiFormControl-root {
+  .MuiFormLabel-root {
+    color: black;
+    margin-bottom: 6px;
+    font-weight: 600;
+    > .MuiFormLabel-asterisk {
+      color: orangered;
+    }
+  }
+  .MuiFormLabel-root.MuiInputLabel-animated,
+  .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+    font-size: 1.2rem;
+    > legend {
+      font-size: 1rem;
+    }
+  }
+}
+
+.MuiAutocomplete-root {
+  .MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-sizeSmall {
+    padding-top: 9.5px;
+    padding-bottom: 9.5px;
+  }
+}
+
+.MuiOutlinedInput-root {
+  .MuiInputBase-inputSizeSmall {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+.MuiCard-root {
+  .MuiCardHeader-root {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  .MuiCardContent-root {
+    padding: 24px 16px;
+  }
+}
+
+.MuiPickersLayout-root {
+  .MuiDayCalendar-header .MuiDayCalendar-weekDayLabel {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: rgba(0, 0, 0);
+  }
+  .MuiDayCalendar-weekContainer .MuiButtonBase-root.MuiPickersDay-root {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+}

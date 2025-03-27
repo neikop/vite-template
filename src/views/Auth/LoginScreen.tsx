@@ -1,12 +1,15 @@
-import { Box, Button, For, HStack, Input, Text } from "@chakra-ui/react"
+import { LoadingButton } from "@mui/lab"
+import { Box, Container, Stack, TextField } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { toaster } from "components/ui/toaster"
+import logo from "assets/icons/logo.png"
+import bannerLogin from "assets/images/banner-login.png"
+import { Flex, FlexColumn, InputPassword, Text } from "components/common"
+import { useResponsive } from "hooks"
+import { enqueueSnackbar } from "notistack"
 import { Controller, useForm } from "react-hook-form"
-import { FaLock, FaUser } from "react-icons/fa"
-import { Link } from "react-router"
-import { authRoute } from "routes"
-import { authService } from "services"
-import { useProfileStore } from "store/profileStore"
+import { useDispatch } from "react-redux"
+import { signIn, updatePermissions, updateUser } from "reducers/profileSlice"
+import { authService, queryClient, userService } from "services"
 
 type LoginFormValues = {
   password: string
@@ -14,113 +17,115 @@ type LoginFormValues = {
 }
 
 const LoginScreen = () => {
+  const { isDesktop } = useResponsive()
+
+  const dispatch = useDispatch()
   const {
     control,
-    formState: { errors },
+    formState: { isSubmitting },
     handleSubmit,
-  } = useForm<LoginBody>()
-
-  const { signIn } = useProfileStore()
-
-  const { isPending, mutate } = useMutation({
-    mutationFn: authService.login,
-    onError: () => {},
-    onSuccess: (data) => {
-      signIn(data)
-      toaster.create({ title: "Login success" })
+  } = useForm<LoginFormValues>({
+    defaultValues: {
+      password: "",
+      username: "",
     },
   })
 
+  const loginMutation = useMutation({ mutationFn: authService.login })
+
   const onSubmit = async (values: LoginFormValues) => {
-    mutate(values)
+    const { username } = values
+    const loginInfo = await loginMutation.mutateAsync({
+      ...values,
+      username: username.trim().toLowerCase(),
+    })
+
+    dispatch(signIn({ ...loginInfo, isLoggedIn: false }))
+
+    await Promise.all([userService.getMe(), userService.getPermissions()]).then(([user, permission]) => {
+      dispatch(updateUser(user))
+      dispatch(updatePermissions(permission.permissions))
+      dispatch(signIn(loginInfo))
+    })
+
+    enqueueSnackbar("Đăng nhập thành công")
+    queryClient.invalidateQueries()
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      handleSubmit(onSubmit)()
+    }
   }
 
   return (
-    <Box className="flex h-screen w-screen items-center justify-center bg-cover bg-no-repeat">
-      <Box className="bg-opacity-50 w-full max-w-sm rounded-md p-8">
-        <Text className="mb-8 text-center text-3xl font-extrabold text-white">{"auth.login"}</Text>
-        <HStack>
-          <For each={["success", "error", "warning", "info", "loading"]}>
-            {(type) => (
-              <Button
-                key={type}
-                onClick={() =>
-                  toaster.create({
-                    title: `Toast status is ${type}`,
-                    type: type,
-                  })
-                }
-                size="sm"
-                variant="outline"
-              >
-                {type}
-              </Button>
+    <Container maxWidth="sm">
+      <Box
+        className="fixed top-0 right-0 left-0 h-[480px] lg:top-[2%] lg:right-[5%] lg:left-[5%] lg:rounded-3xl"
+        sx={{ background: `url(${bannerLogin}) no-repeat center / cover` }}
+      />
+      <Stack className="relative z-10 gap-6 rounded-3xl bg-white p-6 lg:p-12">
+        <Flex justifyContent="center">
+          <img className="h-[120px]" src={logo} />
+        </Flex>
+        <Stack>
+          <Text className="text-center text-xl font-bold">{isDesktop && "Chào mừng đến với "}Servicing Portal</Text>
+          <Text className="text-primary-main text-center font-bold">Vui lòng đăng nhập vào tài khoản của bạn</Text>
+        </Stack>
+
+        <FlexColumn className="items-center justify-center gap-6">
+          <Controller
+            control={control}
+            name="username"
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                autoComplete="username"
+                fullWidth
+                label="Tên đăng nhập"
+                required
+                {...field}
+                error={!!error}
+                helperText={error?.message}
+                onKeyDown={handleKeyDown}
+              />
             )}
-          </For>
-        </HStack>
+            rules={{
+              required: "Tên đăng nhập không được để trống",
+            }}
+          />
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <Box className="relative">
-            <Controller
-              control={control}
-              name="username"
-              render={({ field }) => (
-                <Box className="bg-opacity-20 flex h-12 items-center rounded-full bg-white p-2">
-                  <FaUser className="text-primary-main mr-2" />
-                  <Input
-                    {...field}
-                    className="w-full flex-1 bg-transparent text-white placeholder-gray-200 focus:outline-none"
-                    placeholder={"placeholder.enter_account"}
-                  />
-                </Box>
-              )}
-              rules={{ required: "placeholder.enter_account" }}
-            />
-            {errors.username && <Text className="mt-1 text-sm text-red-500">{errors.username.message}</Text>}
-          </Box>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field, fieldState: { error } }) => (
+              <InputPassword
+                autoComplete="current-password"
+                fullWidth
+                label="Mật khẩu"
+                required
+                {...field}
+                error={!!error}
+                helperText={error?.message}
+                onKeyDown={handleKeyDown}
+              />
+            )}
+            rules={{
+              required: "Mật khẩu không được để trống",
+            }}
+          />
 
-          <Box className="relative">
-            <Controller
-              control={control}
-              name="password"
-              render={({ field }) => (
-                <Box className="bg-opacity-20 flex h-12 items-center rounded-full bg-white p-2">
-                  <FaLock className="text-primary-main mr-3" />
-                  <Input
-                    {...field}
-                    className="w-full flex-1 bg-transparent text-white placeholder-gray-200 focus:outline-none"
-                    placeholder={"placeholder.enter_password"}
-                    type="password"
-                  />
-                </Box>
-              )}
-              rules={{ required: "placeholder.enter_password" }}
-            />
-            {errors.password && <Text className="mt-1 text-sm text-red-500">{errors.password.message}</Text>}
-          </Box>
-
-          <Box className="flex justify-between text-white">
-            <Link className="hover:underline" to={authRoute.forgotPassword.url}>
-              {"auth.forgot_password"}
-            </Link>
-            <Link className="hover:underline" to={authRoute.register.url}>
-              {"auth.register"}
-            </Link>
-          </Box>
-
-          <Box className="flex justify-center">
-            <Button
-              className="bg-primary-main w-full rounded-full py-2 font-bold text-white"
-              disabled={isPending}
-              loading={isPending}
-              type="submit"
-            >
-              {"auth.login"}
-            </Button>
-          </Box>
-        </form>
-      </Box>
-    </Box>
+          <LoadingButton
+            fullWidth
+            loading={isSubmitting}
+            onClick={handleSubmit(onSubmit)}
+            size="large"
+            variant="contained"
+          >
+            Đăng nhập
+          </LoadingButton>
+        </FlexColumn>
+      </Stack>
+    </Container>
   )
 }
 

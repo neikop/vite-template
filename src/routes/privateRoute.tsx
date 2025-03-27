@@ -1,16 +1,17 @@
 import { Home } from "views/Home"
-import { Hotel } from "views/Hotel"
+import { Profile } from "views/Profile"
 
 const privateRoute = {
   home: {
     component: Home,
     name: "Home",
     path: "/",
+    requiredPermission: "",
   },
-  hotel: {
-    component: Hotel,
-    name: "Hotel",
-    path: "/hotel",
+  profile: {
+    component: Profile,
+    name: "Profile",
+    path: "/profile",
   },
 }
 

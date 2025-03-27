@@ -1,0 +1,35 @@
+.MuiButton-root.MuiButton-outlinedInherit {
+  border-color: rgba(0, 0, 0, 0.23);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.border {
+  border-color: rgba(0, 0, 0, 0.23);
+}
+
+@media only screen and (min-width: 600px) {
+  .notistack-SnackbarContainer {
+    top: 64px !important;
+  }
+}
+.notistack-SnackbarContainer {
+  .notistack-MuiContent {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+.MuiChip-root {
+  font-weight: 700;
+}
+
+@media only screen and (max-width: 900px) {
+  .MuiTablePagination-root {
+    .MuiTablePagination-displayedRows {
+      padding: 0px 12px;
+    }
+    .MuiTablePagination-actions {
+      display: none;
+    }
+  }
+}

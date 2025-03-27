@@ -34,7 +34,8 @@ export default tseslint.config(
       "perfectionist/sort-objects": "warn",
       "perfectionist/sort-jsx-props": "warn",
       "perfectionist/sort-union-types": "warn",
-      "perfectionist/sort-intersection-types": "warn"
+      "perfectionist/sort-intersection-types": "warn",
+      "no-empty": "off",
     },
   },
 )

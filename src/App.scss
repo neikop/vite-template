@@ -1,4 +1,15 @@
+@import 'styles/components';
+@import "styles/mui";
+
+main {
+  height: 100vh;
+  background-color: var(--color-background-main);
+  color: var(--color-text-primary);
+}
+
 :root {
+  --color-primary-main: #019cb4;
+  --color-secondary-main: #003ca6;
 }
 
 * {

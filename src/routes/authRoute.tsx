@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 import { LoginScreen } from "views/Auth"
 
 const authRoute = {
