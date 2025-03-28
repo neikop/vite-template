@@ -7,7 +7,7 @@ import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { userService } from "services"
 
-type DialogController = PopupController & DialogProps
+type DialogController = DialogProps & PopupController
 
 type Props = DialogController
 

@@ -1,5 +1,5 @@
 import { Box } from "@mui/material"
-import { LoginScreen } from "views/Auth"
+import { LoginScreen, RegisterScreen } from "views/Auth"
 
 const authRoute = {
   forgotPassword: {
@@ -13,7 +13,7 @@ const authRoute = {
     url: "/auth/login",
   },
   register: {
-    component: Box,
+    component: RegisterScreen,
     path: "/register",
     url: "/auth/register",
   },

@@ -27,7 +27,7 @@ const AppProfile = () => {
   return (
     <Flex className="items-center justify-end gap-2">
       <Button className="rounded-full p-1 pr-3" onClick={(event) => setAnchorMenu(event.currentTarget)} size="small">
-        <Avatar className="bg-primary-main mr-2 h-7 w-7">{user?.username?.[0].toUpperCase()}</Avatar>
+        <Avatar className="mr-2 h-7 w-7 bg-primary-main">{user?.username?.[0].toUpperCase()}</Avatar>
         {user?.username}
       </Button>
 

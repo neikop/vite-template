@@ -63,8 +63,8 @@ export const formatTextAndNumberAndUpperCase = (inputValue: string): string => {
 
 export const convertDataUrlToFile = (dataUrl: string, fileName?: string): File => {
   let arr = dataUrl.split(","),
-    mime = arr[0]?.match(/:(.*?);/)?.[1],
     bstr = atob(arr[arr.length - 1]),
+    mime = arr[0]?.match(/:(.*?);/)?.[1],
     n = bstr.length,
     u8arr = new Uint8Array(n)
   while (n--) {
@@ -85,7 +85,7 @@ export const reduceImageFile = (file: File) => {
 
         const maxWidth = 600
         const maxHeight = 600
-        let newWidth, newHeight
+        let newHeight, newWidth
 
         if (img.width > img.height) {
           newWidth = maxWidth
@@ -146,11 +146,6 @@ export const domesticIATACodes = [
   "VTG",
 ]
 
-export function isDomesticFlight(departure: string, arrival: string) {
-  if (!departure || !arrival) return false
-  return domesticIATACodes.includes(departure) && domesticIATACodes.includes(arrival)
-}
-
 export function compareDateBySubtract(thisDate: Date | string, subtract: SubtractParams): CompareResult {
   const now = DateTime.now()
   let dateItem = DateTime.fromJSDate(new Date(thisDate))
@@ -165,4 +160,9 @@ export function compareDateBySubtract(thisDate: Date | string, subtract: Subtrac
     isBefore,
     isSame,
   }
+}
+
+export function isDomesticFlight(departure: string, arrival: string) {
+  if (!departure || !arrival) return false
+  return domesticIATACodes.includes(departure) && domesticIATACodes.includes(arrival)
 }

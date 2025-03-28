@@ -17,7 +17,7 @@ const AppBreadcrumb = () => {
         <Home color="primary" />
       </IconButton>
       {routes.map((item, index) => {
-        const isActive = location.pathname === item?.path!
+        const isActive = location.pathname === item?.path
 
         return (
           <Typography
@@ -25,7 +25,9 @@ const AppBreadcrumb = () => {
             color="primary"
             key={index}
             onClick={() => {
-              if (!isActive) navigate(item?.path!)
+              if (!isActive && item?.path) {
+                navigate(item.path)
+              }
             }}
             variant="h5"
           >
