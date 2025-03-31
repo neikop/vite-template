@@ -19,7 +19,7 @@ const AuthLayout = () => {
 
   return (
     <main>
-      <Center className="h-screen bg-black/5">
+      <Center className="min-h-screen bg-black/5">
         <Routes>
           {Object.values(authRoute).map(({ component: Element, path }) => (
             <Route element={<Element />} key={path} path={path} />

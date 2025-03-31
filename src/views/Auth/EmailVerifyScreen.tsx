@@ -6,48 +6,68 @@ import bannerLogin from "assets/images/banner-login.png"
 import { Flex, FlexColumn, InputPassword, Text } from "components/common"
 import { useResponsive } from "hooks"
 import { enqueueSnackbar } from "notistack"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
-import { Link, useHref, useLocation } from "react-router"
+import { Link, useLocation, useParams, useSearchParams } from "react-router"
 import { signIn, updatePermissions, updateUser } from "reducers/profileSlice"
 import { authRoute } from "routes"
 import { authService, queryClient, userService } from "services"
 
-type RegisterFormValues = {
-  email: string
+type EmailVerifyValues = {
   password: string
-  phone: string
   username: string
 }
 
-const RegisterScreen = () => {
+type EmailParams = {
+  email?: string
+  token?: string
+}
+
+const EmailVerifyScreen = () => {
   const { isDesktop } = useResponsive()
+  const [searchParams] = useSearchParams()
+
+  const params: EmailParams = Object.fromEntries(searchParams.entries())
 
   const dispatch = useDispatch()
   const {
     control,
     formState: { isSubmitting },
     handleSubmit,
-  } = useForm<RegisterFormValues>({
+  } = useForm<EmailVerifyValues>({
     defaultValues: {
-      email: "",
       password: "",
-      phone: "",
       username: "",
     },
   })
 
-  const registerMutation = useMutation({ mutationFn: authService.registerProvider })
+  const verifyEmailMutation = useMutation({ mutationFn: authService.verifyEmail })
+  const loginMutation = useMutation({ mutationFn: authService.login })
 
-  const onSubmit = async (values: RegisterFormValues) => {
+  useEffect(() => {
+    if (params.email && params.token) {
+      verifyEmailMutation.mutateAsync(params as EmailVerifyBody)
+    }
+  }, [])
+
+  const onSubmit = async (values: EmailVerifyValues) => {
     const { username } = values
-    await registerMutation.mutateAsync({
+    const loginInfo = await loginMutation.mutateAsync({
       ...values,
-      frontendUrl: window.location.origin + authRoute.emailVerify.url,
       username: username.trim().toLowerCase(),
     })
 
-    enqueueSnackbar("Đăng ký thành công")
+    dispatch(signIn({ ...loginInfo, isLoggedIn: false }))
+
+    await Promise.all([userService.getMe(), userService.getPermissions()]).then(([user, permission]) => {
+      dispatch(updateUser(user))
+      dispatch(updatePermissions(permission.permissions))
+      dispatch(signIn(loginInfo))
+    })
+
+    enqueueSnackbar("Đăng nhập thành công")
+    queryClient.invalidateQueries()
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -67,8 +87,8 @@ const RegisterScreen = () => {
           <img className="h-[60px]" src={logo} />
         </Flex>
         <Stack>
-          <Text className="text-center text-xl font-bold">Đăng ký tài khoản</Text>
-          <Text className="text-center font-bold text-primary-main">Vui lòng nhập thông tin tài khoản</Text>
+          <Text className="text-center text-xl font-bold">{isDesktop && "Chào mừng đến với "}Servicing Portal</Text>
+          <Text className="text-center font-bold text-primary-main">Vui lòng đăng nhập vào tài khoản của bạn</Text>
         </Stack>
 
         <FlexColumn className="items-center justify-center gap-6">
@@ -94,44 +114,6 @@ const RegisterScreen = () => {
 
           <Controller
             control={control}
-            name="phone"
-            render={({ field, fieldState: { error } }) => (
-              <TextField
-                fullWidth
-                label="Số điện thoại"
-                required
-                {...field}
-                error={!!error}
-                helperText={error?.message}
-                onKeyDown={handleKeyDown}
-              />
-            )}
-            rules={{
-              required: "Số điện thoại không được để trống",
-            }}
-          />
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field, fieldState: { error } }) => (
-              <TextField
-                fullWidth
-                label="Email"
-                required
-                {...field}
-                error={!!error}
-                helperText={error?.message}
-                onKeyDown={handleKeyDown}
-              />
-            )}
-            rules={{
-              required: "Email không được để trống",
-            }}
-          />
-
-          <Controller
-            control={control}
             name="password"
             render={({ field, fieldState: { error } }) => (
               <InputPassword
@@ -150,6 +132,12 @@ const RegisterScreen = () => {
             }}
           />
 
+          <Flex className="w-full justify-end">
+            <Link to={authRoute.forgotPassword.url}>
+              <Text className="font-bold text-primary-main hover:brightness-90">Quên mật khẩu</Text>
+            </Link>
+          </Flex>
+
           <LoadingButton
             fullWidth
             loading={isSubmitting}
@@ -157,13 +145,13 @@ const RegisterScreen = () => {
             size="large"
             variant="contained"
           >
-            Đăng ký
+            Đăng nhập
           </LoadingButton>
 
           <Flex className="w-full justify-center gap-2">
-            <Text>Đã có tài khoản?</Text>
-            <Link to={authRoute.login.url}>
-              <Text className="font-bold text-primary-main hover:brightness-90">Đăng nhập</Text>
+            {isDesktop && <Text>Chưa có tài khoản?</Text>}
+            <Link to={authRoute.register.url}>
+              <Text className="font-bold text-primary-main hover:brightness-90">Đăng ký ngay</Text>
             </Link>
           </Flex>
         </FlexColumn>
@@ -172,4 +160,4 @@ const RegisterScreen = () => {
   )
 }
 
-export default RegisterScreen
+export default EmailVerifyScreen

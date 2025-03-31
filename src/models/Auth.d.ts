@@ -9,7 +9,7 @@ type LoginResponse = {
   user?: User
 }
 
-type ProfileType = LoginResponse & {
+type ProfileType = {
   id?: string
   isLoggedIn?: boolean
   isRoleAdmin?: boolean
@@ -18,17 +18,17 @@ type ProfileType = LoginResponse & {
   isTypeProvider?: boolean
   isTypeSystem?: boolean
   permissions?: string[]
-}
+} & LoginResponse
 
-type RegisterBody = {
-  adress: string
-  dateOfBirth: ISODateString
+type RegisterProviderBody = {
   email: string
-  firstName: string
-  lastName: string
+  frontendUrl?: string
   password: string
-  phoneNumber: string
-  sex: AccountSexType
+  phone: string
+  username: string
 }
 
-type RegisterResponse = LoginResponse
+type EmailVerifyBody = {
+  email: string
+  token: string
+}

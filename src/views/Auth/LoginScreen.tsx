@@ -61,7 +61,7 @@ const LoginScreen = () => {
   }
 
   return (
-    <Container maxWidth="sm">
+    <Container className="py-4" maxWidth="sm">
       <Box
         className="fixed left-0 right-0 top-0 h-[480px] lg:left-[5%] lg:right-[5%] lg:top-[2%] lg:rounded-3xl"
         sx={{ background: `url(${bannerLogin}) no-repeat center / cover` }}
@@ -133,7 +133,7 @@ const LoginScreen = () => {
           </LoadingButton>
 
           <Flex className="w-full justify-center gap-2">
-            <Text>Chưa có tài khoản?</Text>
+            {isDesktop && <Text>Chưa có tài khoản?</Text>}
             <Link to={authRoute.register.url}>
               <Text className="font-bold text-primary-main hover:brightness-90">Đăng ký ngay</Text>
             </Link>

@@ -1,7 +1,12 @@
 import { Box } from "@mui/material"
-import { LoginScreen, RegisterScreen } from "views/Auth"
+import { EmailVerifyScreen, LoginScreen, RegisterScreen } from "views/Auth"
 
 const authRoute = {
+  emailVerify: {
+    component: EmailVerifyScreen,
+    path: "/verify-email",
+    url: "/auth/verify-email",
+  },
   forgotPassword: {
     component: Box,
     path: "/forgot-password",
