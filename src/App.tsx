@@ -1,5 +1,5 @@
 import { AppProvider } from "components/app"
-import { AuthLayout, PrivateLayout } from "components/layouts"
+import { AuthLayout, PublicLayout } from "components/layouts"
 import { BrowserRouter, Route, Routes } from "react-router"
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<AuthLayout />} path="/auth/*" />
-          <Route element={<PrivateLayout />} path="/*" />
+          <Route element={<PublicLayout />} path="/*" />
         </Routes>
       </BrowserRouter>
     </AppProvider>
