@@ -6,6 +6,7 @@ import {
   Dialog,
   Flex,
   HStack,
+  IconButton,
   Image,
   Portal,
   SimpleGrid,
@@ -14,8 +15,23 @@ import {
   Text,
 } from "@chakra-ui/react"
 import { Corner } from "components"
+import { useEffect, useState } from "react"
+import { Link } from "react-router"
 
 const Theme = () => {
+  const [showMessenger, setShowMessenger] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      setShowMessenger(scrollTop >= 800)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
   return (
     <Stack alignItems="center" position="relative" py={20}>
       <Stack gap={6}>
@@ -30,12 +46,20 @@ const Theme = () => {
               { content: `Truy vết (Tracing)`, title: "Track 3" },
               { content: `Cầu nối Blockchain (Bridge)`, title: "Track 4" },
             ].map((item, index) => {
+              const isCorner = index === 0 || index === 3
               return (
-                <Center className="hover-box" flexDirection="column" gap={4} h={180} key={index}>
-                  <Text fontSize={34} fontWeight={600}>
+                <Center
+                  bg={isCorner ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.03)"}
+                  className="hover-box"
+                  flexDirection="column"
+                  gap={4}
+                  h={180}
+                  key={index}
+                >
+                  <Text fontSize={34} fontWeight={600} zIndex={1}>
                     {item.title}
                   </Text>
-                  <Text className="description" whiteSpace="pre-line">
+                  <Text className="description" whiteSpace="pre-line" zIndex={1}>
                     {item.content}
                   </Text>
 
@@ -98,6 +122,22 @@ const Theme = () => {
         </Stack>
       </Stack>
       <Corner placement="bottom" />
+
+      <Link to="https://google.com">
+        <IconButton
+          bg="terr.50"
+          bottom={40}
+          boxSize={14}
+          cursor="pointer"
+          display={showMessenger ? "flex" : "none"}
+          position="fixed"
+          right={20}
+          rounded="full"
+          zIndex={20}
+        >
+          <Image boxSize={8} src="/icons/Messenger.png" />
+        </IconButton>
+      </Link>
     </Stack>
   )
 }

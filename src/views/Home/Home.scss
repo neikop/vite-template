@@ -32,7 +32,6 @@
 
   .description {
     color: var(--chakra-colors-white-alpha-800);
-    z-index: 1;
   }
 
   img {
@@ -51,7 +50,8 @@
   }
 }
 
-.hover-box:hover {
+.hover-box:hover,
+.hover-box.active {
   background-color: rgba(0, 224, 234, 1);
   transition: background-color 0.3s ease;
   color: black;
@@ -72,4 +72,55 @@
 
 .bg-gradient {
   background: linear-gradient(to right, rgba(0, 224, 234, 0), rgba(0, 224, 234, 0.25), rgba(0, 224, 234, 0));
+}
+
+.flag-text {
+  font-size: 64px;
+  font-weight: bold;
+  background: linear-gradient(135deg, yellow 50%, red 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.heading {
+  color: rgba(206, 255, 255, 1);
+  text-shadow:
+    0 0 30px rgba(0, 224, 234, 1),
+    0 0 40px rgba(0, 224, 234, 1),
+    0 0 55px rgba(0, 224, 234, 1),
+    2px 2px 2px rgba(59, 206, 166, 0);
+}
+
+.diamond-text {
+  color: red;
+  position: relative;
+  display: inline-block;
+}
+
+.diamond-text::before {
+  content: "Blockchain Việt Nam"; /* same text */
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: yellow;
+  pointer-events: none;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: yellow;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+
+  /* Bigger diamond shape mask centered on "Việt" */
+  -webkit-mask-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>\
+      <polygon points='50,0 100,50 50,100 0,50' fill=\'white\'/>\
+    </svg>");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 75% 140%;
+  -webkit-mask-position: 120% 100%;
 }

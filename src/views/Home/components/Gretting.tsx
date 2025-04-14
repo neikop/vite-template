@@ -1,4 +1,5 @@
-import { Box, Button, Center, Flex, HStack, Image, SimpleGrid, Span, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Center, Flex, HStack, IconButton, Image, SimpleGrid, Span, Stack, Text } from "@chakra-ui/react"
+import { useState } from "react"
 
 const Gretting = () => {
   return (
@@ -15,10 +16,13 @@ const Gretting = () => {
       <Stack alignItems="center" gap="60px" position="absolute" top="50%" transform="translateY(-50%)" zIndex={2}>
         <Stack alignItems="center" gap="32px">
           <Text fontSize={26}>
-            Tìm kiếm tài năng <Span fontWeight={600}>Blockchain Việt Nam</Span>
+            Tìm kiếm tài năng{" "}
+            <Span className="diamond-text" fontWeight={600}>
+              Blockchain Việt Nam
+            </Span>
           </Text>
 
-          <Text fontSize={110} fontWeight={600}>
+          <Text className="heading" fontSize={110} fontWeight={600}>
             VietChain TALENTS
           </Text>
           <Text fontSize={24}>

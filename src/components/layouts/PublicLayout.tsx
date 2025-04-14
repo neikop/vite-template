@@ -6,7 +6,7 @@ import { publicRoute } from "routes"
 const PublicLayout = () => {
   return (
     <Box bgColor="third.10" minH="100vh">
-      <Container maxW={1600} py={10}>
+      <Container maxW={1600}>
         <AppHeader />
         <Routes>
           {Object.values(publicRoute).map(({ component: Element, path }) => (

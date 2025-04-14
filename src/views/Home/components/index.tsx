@@ -1,5 +1,7 @@
+export { default as Contact } from "./Contact"
 export { default as Gretting } from "./Gretting"
 export { default as Intro } from "./Intro"
 export { default as People } from "./People"
+export { default as Register } from "./Register"
 export { default as Theme } from "./Theme"
 export { default as Timeline } from "./Timeline"

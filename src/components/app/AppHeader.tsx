@@ -26,7 +26,7 @@ const AppHeader = () => {
           ].map((item, index) => {
             return (
               <Link key={index} to={item.href}>
-                <Text _hover={{ color: "terr.50" }} color="white" fontWeight={600}>
+                <Text _hover={{ color: "terr.50" }} color="white" fontWeight={500}>
                   {item.label}
                 </Text>
               </Link>
