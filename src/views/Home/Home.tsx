@@ -23,7 +23,8 @@ function findNearestPrices(timestamps: number[], prices: Price[]) {
   })
 }
 
-console.log(findNearestPrices(timestamps, beraPrices))
+console.log("BERA", findNearestPrices(timestamps, beraPrices))
+console.log("HONEY", findNearestPrices(timestamps, honeyPrices))
 
 const Home = () => {
   return <div>HOME</div>
