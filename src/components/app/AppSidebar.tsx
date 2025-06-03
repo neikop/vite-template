@@ -1,7 +1,6 @@
-import { Box, Button, Center, Flex, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Center, HStack, Image, Stack, Text } from "@chakra-ui/react"
 import { JSX } from "react"
-import { LuHotel, LuHouse } from "react-icons/lu"
-import { MdOutlineRunCircle, MdOutlineViewAgenda, MdRunCircle, MdViewAgenda } from "react-icons/md"
+import { MdBrowserNotSupported, MdOutlineRunCircle, MdOutlineViewAgenda } from "react-icons/md"
 import { Link, useLocation } from "react-router"
 import { privateRoute } from "routes"
 
@@ -49,6 +48,7 @@ const AppSidebar = () => {
       <Stack overflow="auto" px={4}>
         <MenuItem {...privateRoute.home} icon={<MdOutlineViewAgenda size={20} />} />
         <MenuItem {...privateRoute.hotel} icon={<MdOutlineRunCircle size={20} />} />
+        <MenuItem {...privateRoute.brownfi} icon={<MdBrowserNotSupported size={20} />} />
       </Stack>
     </Stack>
   )
