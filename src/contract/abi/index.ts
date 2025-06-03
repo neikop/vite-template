@@ -1,6 +1,6 @@
-import ERC20 from "./ERC201.json"
+import ERC20 from "./ERC20.json"
 import IOFT from "./IOFT.json"
-import ISC from "./ISC1.json"
+import ISC from "./ISC.json"
 
 export const ERC20Abi = ERC20
 export const IOFTAbi = IOFT
