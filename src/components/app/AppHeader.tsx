@@ -1,11 +1,24 @@
-import { Box, Flex } from "@chakra-ui/react"
+import { Center, Flex, Image } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { AppSidebar } from "components/app"
+import { Link } from "react-router"
+import { privateRoute } from "routes"
 
 const AppHeader = () => {
   return (
-    <Flex gridArea="header" justifyContent="space-between" px={4} py={2}>
-      <Box></Box>
-      <ConnectButton />
+    <Flex alignItems="stretch" gridArea="header" justifyContent="space-between" px={6} shadow="sm">
+      <Flex alignItems="center" gap={10}>
+        <Center borderWidth={1} p={2} rounded={4}>
+          <Link to={privateRoute.home.path}>
+            <Image src="/vite.svg" />
+          </Link>
+        </Center>
+        <AppSidebar />
+      </Flex>
+
+      <Center>
+        <ConnectButton />
+      </Center>
     </Flex>
   )
 }

@@ -7,12 +7,11 @@ import { privateRoute } from "routes"
 
 type MenuItemProps = {
   icon?: JSX.Element
-  // items?: SubMenuType[]
   name?: string
   path: string
 }
 
-const MenuItem = ({ icon, name, path }: MenuItemProps) => {
+const MenuItem = ({ name, path }: MenuItemProps) => {
   const location = useLocation()
 
   const isHome = path === "/"
@@ -20,37 +19,30 @@ const MenuItem = ({ icon, name, path }: MenuItemProps) => {
   const isSelected = isHome ? location.pathname === path : isContain
 
   return (
-    <Box>
-      <Link to={path}>
-        <HStack
-          minH={12}
-          px={4}
-          py={2}
-          rounded={8}
-          {...(isSelected && { bg: "primary.50" })}
-          _hover={{ bg: "primary.100" }}
-        >
-          <Center>{icon}</Center>
-          <Text>{name}</Text>
-        </HStack>
-      </Link>
-    </Box>
+    <Link to={path}>
+      <Center
+        _hover={{ bg: isSelected ? "purple.50" : "gray.100" }}
+        borderTopColor={isSelected ? "purple.500" : "transparent"}
+        borderTopWidth={3}
+        h="full"
+        pb={3}
+        pt={2}
+        px={6}
+      >
+        <Text color={isSelected ? "teal.600" : "black"} fontWeight="bold">
+          {name}
+        </Text>
+      </Center>
+    </Link>
   )
 }
 
 const AppSidebar = () => {
   return (
-    <Stack borderWidth={1} gridArea="sidebar" m={2} py={2} rounded={16} shadow="inner">
-      <Center gridArea="logo" p={2}>
-        <Link to={privateRoute.home.path}>
-          <Image src="/assets/react.svg" />
-        </Link>
-      </Center>
-      <Stack overflow="auto" px={4}>
-        <MenuItem {...privateRoute.home} icon={<MdOutlineViewAgenda size={20} />} />
-        <MenuItem {...privateRoute.hotel} icon={<MdOutlineRunCircle size={20} />} />
-      </Stack>
-    </Stack>
+    <Flex alignItems="stretch" h="full">
+      <MenuItem {...privateRoute.home} />
+      <MenuItem {...privateRoute.bridge} />
+    </Flex>
   )
 }
 
