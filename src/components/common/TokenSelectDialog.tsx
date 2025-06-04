@@ -4,11 +4,18 @@ import { useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { ipfsService } from "services"
 
-const TokenSelectDialog = () => {
+type Props = {
+  onChange?: (chain: null | Token) => void
+  value?: null | Token
+}
+
+const TokenSelectDialog = ({ onChange, value }: Props) => {
   const dialog = useDialog()
-  const [selectedToken, setSelectedToken] = useState<Token>()
 
   const [searchText, setSearchText] = useState("")
+  const [currentToken, setCurrentToken] = useState<null | Token>(null)
+
+  const selectedToken = value !== undefined ? value : currentToken
 
   const { data: tokens } = useQuery({
     queryFn: () => ipfsService.fetchTokens(),
@@ -26,7 +33,7 @@ const TokenSelectDialog = () => {
   return (
     <Dialog.RootProvider placement="top" scrollBehavior="inside" size="sm" value={dialog}>
       <Dialog.Trigger asChild>
-        <Button rounded="full" size="xs" variant="outline">
+        <Button px={selectedToken ? 1 : undefined} rounded="full" size="xs" variant="outline">
           {selectedToken ? (
             <>
               <Image h={6} rounded="full" src={selectedToken.logoURI} w={6} />
@@ -43,9 +50,9 @@ const TokenSelectDialog = () => {
         <Dialog.Positioner>
           <Dialog.Content mt="142px">
             <Dialog.Header>
-              <Dialog.Title>Select a token</Dialog.Title>
+              <Dialog.Title>Select a Token</Dialog.Title>
             </Dialog.Header>
-            <Dialog.Body maxH={600} pt={0}>
+            <Dialog.Body maxH={600} overflowY="scroll" pr={4} pt={0}>
               <Box backgroundColor="white" pb={2} position="sticky" top={0} zIndex={1}>
                 <Input
                   colorPalette="purple"
@@ -67,7 +74,8 @@ const TokenSelectDialog = () => {
                       justifyContent="flex-start"
                       key={`${token.chainId}/${token.address}`}
                       onClick={() => {
-                        setSelectedToken(token)
+                        setCurrentToken(token)
+                        onChange?.(token)
                         dialog.setOpen(false)
                       }}
                       px={2}

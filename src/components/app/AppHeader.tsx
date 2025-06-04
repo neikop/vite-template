@@ -8,7 +8,7 @@ const AppHeader = () => {
   return (
     <Flex alignItems="stretch" gridArea="header" justifyContent="space-between" px={6} shadow="sm">
       <Flex alignItems="center" gap={10}>
-        <Center borderWidth={1} p={2} rounded={4}>
+        <Center borderRadius={4} borderWidth={1} p={2}>
           <Link to={privateRoute.home.path}>
             <Image src="/vite.svg" />
           </Link>

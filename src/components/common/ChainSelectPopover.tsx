@@ -3,7 +3,7 @@ import { Chain } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { defineChain } from "viem"
-import { arbitrum, mainnet } from "viem/chains"
+import { arbitrum } from "viem/chains"
 
 const onematrix: Chain = defineChain({
   blockExplorers: {
@@ -36,21 +36,27 @@ const onematrixL2: Chain = defineChain({
 })
 
 export const bridgeChains: Chain[] = [
-  { ...mainnet, iconUrl: "https://blockscout-icons.s3.us-east-1.amazonaws.com/ethereum.svg" },
   { ...arbitrum, iconUrl: "https://blockscout-icons.s3.us-east-1.amazonaws.com/arbitrum.svg" },
   { ...onematrix, iconUrl: "https://eth.blockscout.com/assets/favicon/favicon.ico" },
   { ...onematrixL2, iconUrl: "https://zksync.blockscout.com/assets/favicon/favicon.ico" },
 ]
 
-const ChainSelectPopover = () => {
+type Props = {
+  onChange?: (chain: Chain | null) => void
+  value?: Chain | null
+}
+
+const ChainSelectPopover = ({ onChange, value }: Props) => {
   const { onClose, open, setOpen } = useDisclosure()
 
-  const [selectedChain, setSelectedChain] = useState<Chain>()
+  const [currentChain, setCurrentChain] = useState<Chain | null>(null)
+
+  const selectedChain = value !== undefined ? value : currentChain
 
   return (
     <Popover.Root onOpenChange={({ open }) => setOpen(open)} open={open} positioning={{ placement: "bottom-end" }}>
       <Popover.Trigger asChild>
-        <Button colorPalette="purple" rounded="full" size="xs" variant="surface">
+        <Button colorPalette="purple" px={selectedChain ? 1 : undefined} rounded="full" size="xs" variant="surface">
           {selectedChain ? (
             <>
               <Image h={6} src={selectedChain.iconUrl as string} />
@@ -77,7 +83,8 @@ const ChainSelectPopover = () => {
                       justifyContent="flex-start"
                       key={chain.id}
                       onClick={() => {
-                        setSelectedChain(chain)
+                        setCurrentChain(chain)
+                        onChange?.(chain)
                         onClose()
                       }}
                       px={2}
