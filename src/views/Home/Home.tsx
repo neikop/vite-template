@@ -2,9 +2,9 @@ import { Button, Container, Link, Stack, Text } from "@chakra-ui/react"
 import { AbiCoder as AbiCoderV6 } from "@ethersproject/abi-v6"
 import { useMutation } from "@tanstack/react-query"
 import { toaster } from "components/ui/toaster"
-import { ERC20Abi, ISCAbi } from "contract/abis"
-import { devnetClient } from "contract/client"
-import { getRelayer, HANDLER, ISC, TO, USDC } from "contract/utils"
+import { ERC20Abi, ISCAbi } from "contracts/abis"
+import { devnetClient } from "contracts/client"
+import { getRelayer, HANDLER, ISC, TO, USDC } from "contracts/utils"
 import {
   Address,
   encodeFunctionData,

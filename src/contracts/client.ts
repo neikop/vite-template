@@ -1,4 +1,4 @@
-import { oneMatrixDevnet } from "contract/utils"
+import { oneMatrixDevnet } from "contracts/utils"
 import { createPublicClient, http } from "viem"
 
 export const devnetClient = createPublicClient({
