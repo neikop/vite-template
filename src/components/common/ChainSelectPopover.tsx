@@ -3,12 +3,13 @@ import { Chain } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { defineChain } from "viem"
-import { arbitrum } from "viem/chains"
+import { arbitrum, arbitrumSepolia } from "viem/chains"
 
-const onematrix: Chain = defineChain({
+export const onematrix: Chain = defineChain({
   blockExplorers: {
     default: { name: "OneMatrix Explorer", url: "https://devnet-explorer.hiee.us" },
   },
+  iconUrl: "https://eth.blockscout.com/assets/favicon/favicon.ico",
   id: 84004,
   name: "OneMatrix",
   nativeCurrency: { decimals: 18, name: "MTX", symbol: "MTX" },
@@ -20,10 +21,11 @@ const onematrix: Chain = defineChain({
   testnet: true,
 })
 
-const onematrixL2: Chain = defineChain({
+export const onematrixL2: Chain = defineChain({
   blockExplorers: {
     default: { name: "OneMatrix Explorer", url: "https://devnet-l2-explorer.hiee.us" },
   },
+  iconUrl: "https://zksync.blockscout.com/assets/favicon/favicon.ico",
   id: 8400201,
   name: "OneMatrix L2",
   nativeCurrency: { decimals: 18, name: "1MTX", symbol: "1MTX" },
@@ -36,9 +38,9 @@ const onematrixL2: Chain = defineChain({
 })
 
 export const bridgeChains: Chain[] = [
-  { ...arbitrum, iconUrl: "https://blockscout-icons.s3.us-east-1.amazonaws.com/arbitrum.svg" },
-  { ...onematrix, iconUrl: "https://eth.blockscout.com/assets/favicon/favicon.ico" },
-  { ...onematrixL2, iconUrl: "https://zksync.blockscout.com/assets/favicon/favicon.ico" },
+  { ...arbitrum, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
+  { ...arbitrumSepolia, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
+  onematrix,
 ]
 
 type Props = {

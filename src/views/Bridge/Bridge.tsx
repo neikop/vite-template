@@ -1,21 +1,84 @@
 import { Button, Center, Container, Flex, Stack, Text } from "@chakra-ui/react"
+import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
+import { onematrix } from "components/common/ChainSelectPopover"
+import { OFTAbi } from "contracts/abis"
+import * as ethers from "ethers"
 import { useState } from "react"
 import { MdClearAll, MdSwapVert } from "react-icons/md"
 import { useBridgeStore } from "store/bridgeStore"
+import { createPublicClient, http } from "viem"
+import { arbitrumSepolia } from "viem/chains"
+import { useAccount, useWalletClient } from "wagmi"
+
+const OFT_ADDRESS: Record<string, Address> = {
+  [arbitrumSepolia.id]: "0x2dca5dab33c32ee5ccb31c0c02f017a31ee2d863",
+  [onematrix.id]: "0x54Df67faa5eb03D02F91906F6D54bDC9184cE3c8",
+}
 
 const Bridge = () => {
-  const { clear, inputChain, outputChain, setInputChain, setOutputChain, setToken, swapChains, token } =
-    useBridgeStore()
+  const { address, chain } = useAccount()
+  const { data: walletClient } = useWalletClient()
+
+  const { clear, setInputChain, setOutputChain, setToken, swapChains } = useBridgeStore()
+  const { inputChain, outputChain, token } = useBridgeStore()
+
   const [inputAmount, setInputAmount] = useState("")
   const [outputAmount] = [inputAmount]
 
-  const handleSubmit = () => {
-    console.log(inputAmount)
-    console.log(inputChain)
-    console.log(outputChain)
-    console.log(token)
+  const handleSubmit = async () => {
+    if (!address || !walletClient) return
+    if (!inputAmount || !token || !inputChain || !outputChain) return
+
+    const oftAddress = OFT_ADDRESS[inputChain.id]
+
+    const dstEid = outputChain.id
+    const to = address
+    const tokensToSend = BigInt(parseFloat(inputAmount) * 10 ** token.decimals)
+
+    // bytes memory options = OptionsBuilder.newOptions().addExecutorLzReceiveOption(200000, 0);
+    const options = "0x00030100110100000000000000000000000000030d40"
+
+    const sendParam = [
+      dstEid, // destination chain
+      ethers.zeroPadValue(to, 32), // to
+      tokensToSend, // token amount to send
+      (tokensToSend * 9_900n) / 10_000n, // mint token amount
+      options,
+      "0x",
+      "0x",
+    ]
+
+    const publicClient = createPublicClient({
+      chain: inputChain,
+      transport: http(),
+    })
+
+    const quoteSend = await publicClient.readContract({
+      abi: OFTAbi,
+      address: oftAddress,
+      args: [sendParam, false],
+      functionName: "quoteSend",
+    })
+    const fee = quoteSend as { lzTokenFee: bigint; nativeFee: bigint }
+
+    const txHash = await walletClient.sendTransaction({
+      abi: OFTAbi,
+      account: address,
+      address: oftAddress,
+      args: [sendParam, fee, address],
+      functionName: "send",
+      value: fee.nativeFee,
+    })
+
+    console.log(`${chain?.blockExplorers?.default.url}/tx/${txHash}`)
+
+    return txHash
   }
+
+  const bridgeMutation = useMutation({
+    mutationFn: handleSubmit,
+  })
 
   const handleClear = () => {
     clear()
@@ -105,7 +168,14 @@ const Bridge = () => {
           </Stack>
 
           <Stack>
-            <Button borderRadius={16} colorPalette="purple" onClick={handleSubmit} size="xl" variant="subtle">
+            <Button
+              borderRadius={16}
+              colorPalette="purple"
+              loading={bridgeMutation.isPending}
+              onClick={() => bridgeMutation.mutateAsync()}
+              size="xl"
+              variant="subtle"
+            >
               Bridge
             </Button>
           </Stack>
