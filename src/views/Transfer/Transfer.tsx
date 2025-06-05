@@ -226,7 +226,7 @@ const Transfer = () => {
             <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
               <Flex justifyContent="space-between">
                 <Text fontSize="sm" fontWeight="semibold">
-                  Recipient Address
+                  Receiver
                 </Text>
               </Flex>
               <Flex justifyContent="space-between">
