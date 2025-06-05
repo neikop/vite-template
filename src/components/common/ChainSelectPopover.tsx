@@ -80,7 +80,6 @@ const ChainSelectPopover = ({ onChange, value }: Props) => {
                   const isSelected = chain.id === selectedChain?.id
                   return (
                     <Button
-                      borderColor="transparent"
                       colorPalette={isSelected ? "purple" : "gray"}
                       justifyContent="flex-start"
                       key={chain.id}
@@ -91,7 +90,7 @@ const ChainSelectPopover = ({ onChange, value }: Props) => {
                       }}
                       px={2}
                       rounded="full"
-                      variant={isSelected ? "surface" : "outline"}
+                      variant={isSelected ? "subtle" : "ghost"}
                     >
                       <Image h={6} src={chain.iconUrl as string} />
                       {chain.name}

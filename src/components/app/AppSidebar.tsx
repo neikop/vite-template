@@ -1,7 +1,5 @@
-import { Box, Button, Center, Flex, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Center, Flex, Text } from "@chakra-ui/react"
 import { JSX } from "react"
-import { LuHotel, LuHouse } from "react-icons/lu"
-import { MdOutlineRunCircle, MdOutlineViewAgenda, MdRunCircle, MdViewAgenda } from "react-icons/md"
 import { Link, useLocation } from "react-router"
 import { privateRoute } from "routes"
 
@@ -21,7 +19,7 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
   return (
     <Link to={path}>
       <Center
-        _hover={{ bg: isSelected ? "purple.50" : "gray.100" }}
+        _hover={{ backgroundColor: isSelected ? "purple.50" : "bg.muted" }}
         borderTopColor={isSelected ? "purple.500" : "transparent"}
         borderTopWidth={3}
         h="full"
@@ -29,7 +27,7 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
         pt={2}
         px={6}
       >
-        <Text color={isSelected ? "teal.600" : "black"} fontWeight="bold">
+        <Text color={isSelected ? "purple.600" : "gray.900"} fontWeight="bold">
           {name}
         </Text>
       </Center>

@@ -78,7 +78,7 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                 }}
                 useWindow={false}
               >
-                <Box backgroundColor="white" pb={2} position="sticky" top={0} zIndex={1}>
+                <Box backgroundColor="bg.panel" pb={2} position="sticky" top={0} zIndex={1}>
                   <Input
                     colorPalette="purple"
                     onChange={(event) => setSearchText(event.target.value)}
@@ -95,11 +95,11 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                       const isSelected = token.address === selectedToken?.address
                       return (
                         <Button
-                          borderColor="transparent"
                           borderRadius={8}
                           colorPalette={isSelected ? "purple" : "gray"}
                           justifyContent="flex-start"
                           key={`${token.chainId}/${token.address}`}
+                          minH={12}
                           onClick={() => {
                             setCurrentToken(token)
                             onChange?.(token)
@@ -107,23 +107,16 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                           }}
                           overflow="hidden"
                           px={2}
-                          size="lg"
-                          variant={isSelected ? "surface" : "outline"}
+                          variant={isSelected ? "subtle" : "ghost"}
                         >
                           <Image h={6} rounded="full" src={token.logoURI} w={6} />
                           <Box flex={1} overflow="hidden" textAlign="left">
-                            <Text lineHeight="20px">{token.symbol}</Text>
+                            <Text>{token.symbol}</Text>
                             <Flex flex={1} gap={4} justifyContent="space-between">
-                              <Text
-                                color="blackAlpha.800"
-                                fontSize="xs"
-                                fontWeight="normal"
-                                lineHeight="20px"
-                                truncate={true}
-                              >
+                              <Text color="gray.500" fontSize="xs" fontWeight="normal" truncate={true}>
                                 {token.name}
                               </Text>
-                              <Text color="blackAlpha.800" fontSize="xs" fontWeight="normal" lineHeight="20px">
+                              <Text color="gray.500" fontSize="xs" fontWeight="normal">
                                 ChainID: {token.chainId}
                               </Text>
                             </Flex>
@@ -133,15 +126,15 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                     })}
 
                   {isFetching && (
-                    <Flex alignItems="center" borderColor="transparent" borderWidth={1} gap={2} h={11} px={1}>
+                    <Flex alignItems="center" gap={2} h={12} px="5px">
                       <SkeletonCircle size={8} />
                       <SkeletonText noOfLines={2} />
                     </Flex>
                   )}
 
                   {data?.pages[0]?.pagination.totalItems === 0 && (
-                    <Center h={11}>
-                      <Text color="blackAlpha.600">No results found.</Text>
+                    <Center h={12}>
+                      <Text color="gray.500">No results found.</Text>
                     </Center>
                   )}
                 </Stack>

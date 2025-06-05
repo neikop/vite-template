@@ -101,7 +101,7 @@ const Bridge = () => {
           </Flex>
 
           <Stack gap={4} position="relative">
-            <Stack backgroundColor="blackAlpha.50" borderRadius={16} gap={4} p={4}>
+            <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
               <Flex justifyContent="space-between">
                 <Text fontSize="sm" fontWeight="semibold">
                   From
@@ -136,14 +136,14 @@ const Bridge = () => {
             </Stack>
 
             <Flex justifyContent="center" position="absolute" top="50%" transform="translateY(-50%)" w="full">
-              <Center backgroundColor="white" borderRadius={6} p={1}>
+              <Center backgroundColor="bg.panel" borderRadius={6} p={1}>
                 <Button colorPalette="gray" onClick={swapChains} size="xs" variant="subtle">
                   <MdSwapVert />
                 </Button>
               </Center>
             </Flex>
 
-            <Stack backgroundColor="blackAlpha.50" borderRadius={16} gap={4} p={4}>
+            <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
               <Flex justifyContent="space-between">
                 <Text fontSize="sm" fontWeight="semibold">
                   To
