@@ -24,7 +24,7 @@ export const buttonRecipe = defineRecipe({
         padding: 0,
         color: "gray.800",
         _hover: {
-          color: "gray.900",
+          color: "black",
         },
       },
     },

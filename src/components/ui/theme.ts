@@ -2,17 +2,19 @@
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react"
 
 import { buttonRecipe } from "./button.recipe"
+import { linkRecipe } from "./link.recipe"
 
 const config = defineConfig({
   globalCss: {},
   theme: {
     recipes: {
       button: buttonRecipe,
+      link: linkRecipe,
     },
     tokens: {
       colors: {
         bg: {
-          purple: { value: "{colors.purple.50}" },
+          primary: { value: "{colors.purple.50}" },
         },
       },
       sizes: {
@@ -26,9 +28,12 @@ const config = defineConfig({
           main: { value: "{colors.purple.500}" },
           dark: { value: "{colors.purple.600}" },
         },
+        textSecondary: { value: "{colors.gray.500}" },
       },
     },
   },
 })
 
-export default createSystem(defaultConfig, config)
+export const chakraSystem = createSystem(defaultConfig, config)
+
+export default chakraSystem

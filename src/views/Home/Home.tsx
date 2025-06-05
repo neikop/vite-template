@@ -160,12 +160,7 @@ const Home = () => {
 
         <Text fontFamily="mono">
           Tx Hash:{" "}
-          <Link
-            _hover={{ color: "blue.600" }}
-            color="blue.500"
-            href={`https://devnet-explorer.hiee.us/tx/${signMutation.data}`}
-            target="_blank"
-          >
+          <Link href={`https://devnet-explorer.hiee.us/tx/${signMutation.data}`} target="_blank">
             {signMutation.data}
           </Link>
         </Text>

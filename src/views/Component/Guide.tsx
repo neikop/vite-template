@@ -34,42 +34,34 @@ const Guide = () => {
 
         <Stack alignItems="flex-start">
           <Text fontWeight="semibold">Link</Text>
-          <Link _hover={{ color: "blue.600" }} color="blue.500" href="https://google.com" target="_blank">
-            https://google.com
+          <Link href="https://google.com" target="_blank">
+            https://google.com (blue)
+          </Link>
+          <Link colorPalette="purple" href="https://google.com" target="_blank">
+            https://google.com (purple)
           </Link>
         </Stack>
 
         <Stack>
           <Text fontWeight="semibold">Color</Text>
-          <SimpleGrid columns={4} w="fit-content">
-            <Text>Gray</Text>
-            <Text color="gray.500" w={120}>
-              Gray.500
+          <SimpleGrid columns={2} gap={2} w="fit-content">
+            <Text color="textSecondary" w={200}>
+              textSecondary
             </Text>
-            <Text color="gray.600" w={120}>
-              Gray.600
-            </Text>
-            <Text color="gray.900" w={120}>
-              Gray.900
-            </Text>
-            <Text>Purple</Text>
-            <Text color="purple.500" w={120}>
-              Purple.500
-            </Text>
-            <Text color="purple.600" w={120}>
-              Purple.600
-            </Text>
+            <Text color="primary.main">primary.main</Text>
+            <Text color="black">black</Text>
+            <Text color="primary.dark">primary.dark</Text>
           </SimpleGrid>
         </Stack>
 
         <Stack>
           <Text fontWeight="semibold">Background</Text>
           <HStack>
-            <Center backgroundColor="purple.50" p={2} w={200}>
-              <Text>Purple.50</Text>
+            <Center backgroundColor="bg.primary" p={2} w={200}>
+              <Text>bg.primary</Text>
             </Center>
             <Center backgroundColor="bg.muted" p={2} w={200}>
-              <Text>Bg.muted</Text>
+              <Text>bg.muted</Text>
             </Center>
           </HStack>
         </Stack>

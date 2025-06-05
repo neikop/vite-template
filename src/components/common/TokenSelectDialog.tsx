@@ -113,10 +113,10 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                           <Box flex={1} overflow="hidden" textAlign="left">
                             <Text>{token.symbol}</Text>
                             <Flex flex={1} gap={4} justifyContent="space-between">
-                              <Text color="gray.500" fontSize="xs" fontWeight="normal" truncate={true}>
+                              <Text color="textSecondary" fontSize="xs" fontWeight="normal" truncate={true}>
                                 {token.name}
                               </Text>
-                              <Text color="gray.500" fontSize="xs" fontWeight="normal">
+                              <Text color="textSecondary" fontSize="xs" fontWeight="normal">
                                 ChainID: {token.chainId}
                               </Text>
                             </Flex>
@@ -134,7 +134,7 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
 
                   {data?.pages[0]?.pagination.totalItems === 0 && (
                     <Center h={12}>
-                      <Text color="gray.500">No results found.</Text>
+                      <Text color="textSecondary">No results found.</Text>
                     </Center>
                   )}
                 </Stack>
