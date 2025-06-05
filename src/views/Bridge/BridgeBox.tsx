@@ -166,7 +166,7 @@ const BridgeBox = () => {
         </Stack>
       </Stack>
 
-      <Stack>
+      <Stack pt={9}>
         <Button
           borderRadius={16}
           colorPalette="purple"
