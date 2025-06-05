@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "postinstall": "pnpm chakra-typegen",
     "lint": "eslint .",
     "preview": "vite preview",
     "chakra-typegen": "npx @chakra-ui/cli typegen ./src/components/ui/theme.ts"
