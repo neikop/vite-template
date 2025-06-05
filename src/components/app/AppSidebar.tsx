@@ -38,7 +38,7 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
 const AppSidebar = () => {
   return (
     <Flex alignItems="stretch" h="full">
-      <MenuItem {...privateRoute.home} />
+      <MenuItem {...privateRoute.transfer} />
       <MenuItem {...privateRoute.bridge} />
     </Flex>
   )

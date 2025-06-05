@@ -1,4 +1,4 @@
-import { Button, Image, Popover, Portal, Stack, useDisclosure } from "@chakra-ui/react"
+import { Button, ButtonProps, Image, Popover, Portal, Stack, useDisclosure } from "@chakra-ui/react"
 import { Chain } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -44,11 +44,12 @@ export const bridgeChains: Chain[] = [
 ]
 
 type Props = {
+  buttonProps?: ButtonProps
   onChange?: (chain: Chain | null) => void
   value?: Chain | null
 }
 
-const ChainSelectPopover = ({ onChange, value }: Props) => {
+const ChainSelectPopover = ({ buttonProps, onChange, value }: Props) => {
   const { onClose, open, setOpen } = useDisclosure()
 
   const [currentChain, setCurrentChain] = useState<Chain | null>(null)
@@ -58,7 +59,14 @@ const ChainSelectPopover = ({ onChange, value }: Props) => {
   return (
     <Popover.Root onOpenChange={({ open }) => setOpen(open)} open={open} positioning={{ placement: "bottom-end" }}>
       <Popover.Trigger asChild>
-        <Button colorPalette="purple" px={selectedChain ? 1 : undefined} rounded="full" size="xs" variant="surface">
+        <Button
+          colorPalette="purple"
+          px={selectedChain ? 1 : undefined}
+          rounded="full"
+          size="xs"
+          variant="surface"
+          {...buttonProps}
+        >
           {selectedChain ? (
             <>
               <Image h={6} src={selectedChain.iconUrl as string} />

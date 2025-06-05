@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonProps,
   Center,
   CloseButton,
   Dialog,
@@ -19,14 +20,16 @@ import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
-import { kyberService } from "services"
+import { devnetService, kyberService } from "services"
 
 type Props = {
+  buttonProps?: ButtonProps
+  isDevnet?: boolean
   onChange?: (chain: null | Token) => void
   value?: null | Token
 }
 
-const TokenSelectDialog = ({ onChange, value }: Props) => {
+const TokenSelectDialog = ({ buttonProps, isDevnet, onChange, value }: Props) => {
   const dialog = useDialog()
 
   const [searchText, setSearchText] = useState("")
@@ -44,14 +47,17 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
       return nextPage
     },
     initialPageParam: 1,
-    queryFn: ({ pageParam: page }) => kyberService.fetchTokens({ page, pageSize: 20, query: debouncedSearchText }),
+    queryFn: ({ pageParam: page }) => {
+      const service = isDevnet ? devnetService : kyberService
+      return service.fetchTokens({ page, pageSize: 20, query: debouncedSearchText })
+    },
     queryKey: ["kyberService.fetchTokens", { query: debouncedSearchText }],
   })
 
   return (
     <Dialog.RootProvider placement="top" scrollBehavior="inside" size="sm" value={dialog}>
       <Dialog.Trigger asChild>
-        <Button px={selectedToken ? 1 : undefined} rounded="full" size="xs" variant="outline">
+        <Button px={selectedToken ? 1 : undefined} rounded="full" size="xs" variant="outline" {...buttonProps}>
           {selectedToken ? (
             <>
               <Image h={6} rounded="full" src={selectedToken.logoURI} w={6} />

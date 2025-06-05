@@ -2,7 +2,7 @@ import { Chain } from "@rainbow-me/rainbowkit"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
-type Bridge = {
+type BridgeStorage = {
   clear: () => void
   inputChain: Chain | null
   outputChain: Chain | null
@@ -13,7 +13,7 @@ type Bridge = {
   token: null | Token
 }
 
-export const useBridgeStore = create<Bridge>()(
+export const useBridgeStore = create<BridgeStorage>()(
   persist(
     (set, get) => ({
       clear: () => set({ inputChain: null, outputChain: null, token: null }),

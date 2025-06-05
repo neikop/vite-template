@@ -7,7 +7,7 @@ import * as ethers from "ethers"
 import { useState } from "react"
 import { MdClearAll, MdSwapVert } from "react-icons/md"
 import { useBridgeStore } from "store/bridgeStore"
-import { createPublicClient, http } from "viem"
+import { createPublicClient, http, parseEther } from "viem"
 import { arbitrumSepolia } from "viem/chains"
 import { useAccount, useWalletClient } from "wagmi"
 
@@ -17,7 +17,7 @@ const OFT_ADDRESS: Record<string, Address> = {
 }
 
 const Bridge = () => {
-  const { address, chain } = useAccount()
+  const { address, chain, isConnected } = useAccount()
   const { data: walletClient } = useWalletClient()
 
   const { clear, setInputChain, setOutputChain, setToken, swapChains } = useBridgeStore()
@@ -26,24 +26,23 @@ const Bridge = () => {
   const [inputAmount, setInputAmount] = useState("")
   const [outputAmount] = [inputAmount]
 
-  const handleSubmit = async () => {
+  const handleBridge = async () => {
     if (!address || !walletClient) return
     if (!inputAmount || !token || !inputChain || !outputChain) return
 
     const oftAddress = OFT_ADDRESS[inputChain.id]
 
-    const dstEid = outputChain.id
-    const to = address
-    const tokensToSend = BigInt(parseFloat(inputAmount) * 10 ** token.decimals)
+    const amount = parseEther(inputAmount)
+    const toAddress = address
 
     // bytes memory options = OptionsBuilder.newOptions().addExecutorLzReceiveOption(200000, 0);
     const options = "0x00030100110100000000000000000000000000030d40"
 
     const sendParam = [
-      dstEid, // destination chain
-      ethers.zeroPadValue(to, 32), // to
-      tokensToSend, // token amount to send
-      (tokensToSend * 9_900n) / 10_000n, // mint token amount
+      outputChain.id, // destination chain
+      ethers.zeroPadValue(toAddress, 32), // to
+      amount, // token amount to send
+      (amount * 9_900n) / 10_000n, // mint token amount
       options,
       "0x",
       "0x",
@@ -77,7 +76,7 @@ const Bridge = () => {
   }
 
   const bridgeMutation = useMutation({
-    mutationFn: handleSubmit,
+    mutationFn: handleBridge,
   })
 
   const handleClear = () => {
@@ -147,6 +146,7 @@ const Bridge = () => {
                 <NumericInput
                   border="none"
                   caretColor="transparent"
+                  color="textSecondary"
                   fontSize="2xl"
                   fontWeight="semibold"
                   h={8}
@@ -165,6 +165,7 @@ const Bridge = () => {
             <Button
               borderRadius={16}
               colorPalette="purple"
+              disabled={!isConnected}
               loading={bridgeMutation.isPending}
               onClick={() => bridgeMutation.mutateAsync()}
               size="xl"

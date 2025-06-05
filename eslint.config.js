@@ -31,6 +31,7 @@ export default tseslint.config(
       "@typescript-eslint/no-empty-object-type": "off",
       "prettier/prettier": "warn",
       "perfectionist/sort-imports": "warn",
+      "perfectionist/sort-exports": "warn",
       "perfectionist/sort-objects": "warn",
       "perfectionist/sort-jsx-props": "warn",
       "perfectionist/sort-union-types": "warn",
