@@ -108,15 +108,9 @@ const Bridge = () => {
                 </Text>
                 <Flex gap={2}>
                   <Text fontSize="sm">Balance: 0</Text>
-                  <Text
-                    _hover={{ color: "purple.600" }}
-                    color="purple.500"
-                    cursor="pointer"
-                    fontSize="sm"
-                    fontWeight="semibold"
-                  >
+                  <Button colorPalette="purple" variant="text">
                     Max
-                  </Text>
+                  </Button>
                 </Flex>
               </Flex>
               <Flex gap={2} justifyContent="space-between">

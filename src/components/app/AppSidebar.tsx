@@ -19,15 +19,15 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
   return (
     <Link to={path}>
       <Center
-        _hover={{ backgroundColor: isSelected ? "purple.50" : "bg.muted" }}
-        borderTopColor={isSelected ? "purple.500" : "transparent"}
+        _hover={{ backgroundColor: isSelected ? "bg.purple" : "bg.muted" }}
+        borderTopColor={isSelected ? "primary.main" : "transparent"}
         borderTopWidth={3}
         h="full"
         pb={3}
         pt={2}
         px={6}
       >
-        <Text color={isSelected ? "purple.600" : "gray.900"} fontWeight="bold">
+        <Text color={isSelected ? "primary.dark" : "gray.900"} fontWeight="bold">
           {name}
         </Text>
       </Center>

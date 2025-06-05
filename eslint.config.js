@@ -28,6 +28,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-empty-object-type": "off",
       "prettier/prettier": "warn",
       "perfectionist/sort-imports": "warn",
       "perfectionist/sort-objects": "warn",

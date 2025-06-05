@@ -2,7 +2,7 @@ import { Button, Center, Container, HStack, Link, SimpleGrid, Stack, Text } from
 
 const Guide = () => {
   const colors = ["gray", "purple"]
-  const types = ["ghost", "subtle", "outline", "surface"]
+  const types = ["ghost", "subtle", "outline", "surface", "text"]
 
   return (
     <Container>
@@ -32,7 +32,7 @@ const Guide = () => {
           </SimpleGrid>
         </Stack>
 
-        <Stack>
+        <Stack alignItems="flex-start">
           <Text fontWeight="semibold">Link</Text>
           <Link _hover={{ color: "blue.600" }} color="blue.500" href="https://google.com" target="_blank">
             https://google.com
