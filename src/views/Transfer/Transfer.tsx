@@ -2,6 +2,7 @@ import { Button, Center, Checkbox, Container, Flex, Input, Stack, Text, useCheck
 import { AbiCoder as AbiCoderV6 } from "@ethersproject/abi-v6"
 import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
+import { toaster } from "components/ui/toaster"
 import { ERC20Abi, ISCAbi } from "contracts/abis"
 import { useState } from "react"
 import { MdArrowDownward, MdClearAll } from "react-icons/md"
@@ -145,16 +146,35 @@ const Transfer = () => {
     })
 
     console.log(`${fromChain?.blockExplorers?.default.url}/tx/${txHash}`)
-
     return txHash
   }
 
   const handleTransferWithout = async () => {
-    return ""
+    if (!address || !walletClient) return
+    if (!inputAmount || !token || !receiveAddress) return
+
+    const amount = parseEther(inputAmount)
+
+    const txHash = await walletClient.writeContract({
+      abi: ERC20Abi,
+      address: token.address,
+      args: [receiveAddress, amount],
+      functionName: "transfer",
+    })
+
+    console.log(`${chain?.blockExplorers?.default.url}/tx/${txHash}`)
+    return txHash
   }
 
   const transferMutation = useMutation({
     mutationFn: withAggreement.checked ? handleTransferWithAggrement : handleTransferWithout,
+    onSuccess: () => {
+      toaster.create({
+        description: "Your transaction was successfully sent",
+        title: "Success",
+        type: "success",
+      })
+    },
   })
 
   const handleClear = () => {
@@ -170,9 +190,14 @@ const Transfer = () => {
             <Flex alignItems="center" gap={2}>
               <Text fontWeight="bold">Transfer</Text>
               <ChainSelectPopover
-                buttonProps={{ colorPalette: "gray", variant: "outline" }}
+                buttonProps={{
+                  colorPalette: "gray",
+                  disabled: !withAggreement.checked,
+                  opacity: 1,
+                  variant: "outline",
+                }}
                 onChange={setFromChain}
-                value={fromChain}
+                value={withAggreement.checked ? fromChain : chain}
               />
             </Flex>
 
@@ -208,7 +233,7 @@ const Transfer = () => {
 
                 <TokenSelectDialog
                   buttonProps={{ colorPalette: "purple", variant: "surface" }}
-                  isDevnet
+                  isDevnet={withAggreement.checked}
                   onChange={setToken}
                   value={token}
                 />

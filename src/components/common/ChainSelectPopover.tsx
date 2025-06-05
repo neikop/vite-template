@@ -69,13 +69,13 @@ const ChainSelectPopover = ({ buttonProps, onChange, value }: Props) => {
         >
           {selectedChain ? (
             <>
-              <Image h={6} src={selectedChain.iconUrl as string} />
+              <Image h={6} rounded="full" src={selectedChain.iconUrl as string} />
               {selectedChain.name}
             </>
           ) : (
             "Select Chain"
           )}
-          <MdExpandMore />
+          {!buttonProps?.disabled && <MdExpandMore />}
         </Button>
       </Popover.Trigger>
       <Portal>
@@ -100,7 +100,7 @@ const ChainSelectPopover = ({ buttonProps, onChange, value }: Props) => {
                       rounded="full"
                       variant={isSelected ? "subtle" : "ghost"}
                     >
-                      <Image h={6} src={chain.iconUrl as string} />
+                      <Image h={6} rounded="full" src={chain.iconUrl as string} />
                       {chain.name}
                     </Button>
                   )

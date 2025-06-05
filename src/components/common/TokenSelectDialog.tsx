@@ -51,7 +51,7 @@ const TokenSelectDialog = ({ buttonProps, isDevnet, onChange, value }: Props) =>
       const service = isDevnet ? devnetService : kyberService
       return service.fetchTokens({ page, pageSize: 20, query: debouncedSearchText })
     },
-    queryKey: ["kyberService.fetchTokens", { query: debouncedSearchText }],
+    queryKey: ["kyberService.fetchTokens", { isDevnet, query: debouncedSearchText }],
   })
 
   return (

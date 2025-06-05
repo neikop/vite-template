@@ -2,6 +2,7 @@ import { Button, Center, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { onematrix } from "components/common/ChainSelectPopover"
+import { toaster } from "components/ui/toaster"
 import { OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
 import { useState } from "react"
@@ -70,13 +71,19 @@ const Bridge = () => {
       value: fee.nativeFee,
     })
 
-    console.log(`${chain?.blockExplorers?.default.url}/tx/${txHash}`)
-
+    console.log(`${outputChain?.blockExplorers?.default.url}/tx/${txHash}`)
     return txHash
   }
 
   const bridgeMutation = useMutation({
     mutationFn: handleBridge,
+    onSuccess: () => {
+      toaster.create({
+        description: "Your transaction was successfully sent",
+        title: "Success",
+        type: "success",
+      })
+    },
   })
 
   const handleClear = () => {
