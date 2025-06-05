@@ -132,7 +132,7 @@ const TokenSelectDialog = ({ buttonProps, isDevnet, onChange, value }: Props) =>
                     })}
 
                   {isFetching && (
-                    <Flex alignItems="center" gap={2} h={12} px="5px">
+                    <Flex alignItems="center" gap={2} h={12} px={1}>
                       <SkeletonCircle size={8} />
                       <SkeletonText noOfLines={2} />
                     </Flex>
