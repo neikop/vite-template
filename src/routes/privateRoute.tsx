@@ -1,6 +1,5 @@
 import { Bridge } from "views/Bridge"
 import { Guide } from "views/Component"
-import { Home } from "views/Home"
 import { Transfer } from "views/Transfer"
 
 const privateRoute = {
@@ -15,9 +14,9 @@ const privateRoute = {
     path: "/component",
   },
   home: {
-    component: Home,
-    name: "Home",
-    path: "/",
+    component: Bridge,
+    name: "Bridge",
+    path: "/bridge",
   },
   transfer: {
     component: Transfer,

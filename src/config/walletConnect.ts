@@ -41,7 +41,7 @@ export const onematrixL2: Chain = defineChain({
 
 export const wagmiConfig = getDefaultConfig({
   appName: "Kite Template",
-  chains: [mainnet, arbitrum, berachain, onematrix, arbitrumSepolia],
+  chains: [arbitrum, onematrix, arbitrumSepolia],
   projectId: WALLET_CONNECT_PROJECT_ID,
   ssr: false,
 })
