@@ -9,7 +9,7 @@ type BridgeStorage = {
   setInputChain: (chain: Chain | null) => void
   setOutputChain: (chain: Chain | null) => void
   setToken: (token: null | Token) => void
-  swapChains: () => void
+  swapChains: () => { inputChain?: Chain | null; outputChain?: Chain | null }
   token: null | Token
 }
 
@@ -37,6 +37,7 @@ export const useBridgeStore = create<BridgeStorage>()(
       swapChains: () => {
         const { inputChain, outputChain } = get()
         set({ inputChain: outputChain, outputChain: inputChain })
+        return { inputChain: outputChain, outputChain: inputChain }
       },
       token: null,
     }),

@@ -15,22 +15,26 @@ import {
   Text,
   useDialog,
 } from "@chakra-ui/react"
+import { Chain } from "@rainbow-me/rainbowkit"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { devnetService, kyberService } from "services"
+import { useAccount } from "wagmi"
 
 type Props = {
   buttonProps?: ButtonProps
+  fromChain?: Chain | null
   isDevnet?: boolean
   onChange?: (chain: null | Token) => void
   value?: null | Token
 }
 
-const TokenSelectDialog = ({ buttonProps, isDevnet, onChange, value }: Props) => {
+const TokenSelectDialog = ({ buttonProps, fromChain, isDevnet, onChange, value }: Props) => {
   const dialog = useDialog()
+  const { chainId } = useAccount()
 
   const [searchText, setSearchText] = useState("")
   const [currentToken, setCurrentToken] = useState<null | Token>(null)
@@ -49,9 +53,14 @@ const TokenSelectDialog = ({ buttonProps, isDevnet, onChange, value }: Props) =>
     initialPageParam: 1,
     queryFn: ({ pageParam: page }) => {
       const service = isDevnet ? devnetService : kyberService
-      return service.fetchTokens({ page, pageSize: 20, query: debouncedSearchText })
+      return service.fetchTokens({
+        chainId: isDevnet ? fromChain?.id : chainId,
+        page,
+        pageSize: 20,
+        query: debouncedSearchText,
+      })
     },
-    queryKey: ["kyberService.fetchTokens", { isDevnet, query: debouncedSearchText }],
+    queryKey: ["kyberService.fetchTokens", { chainId, fromChain, query: debouncedSearchText }],
   })
 
   return (

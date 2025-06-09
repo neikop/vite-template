@@ -2,24 +2,18 @@ import { Button, Center, Flex, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
-import { onematrix } from "config/walletConnect"
 import { OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
 import { useState } from "react"
 import { MdClearAll, MdSwapVert } from "react-icons/md"
 import { useBridgeStore } from "store/bridgeStore"
 import { createPublicClient, http, parseEther } from "viem"
-import { arbitrumSepolia } from "viem/chains"
-import { useAccount, useWalletClient } from "wagmi"
-
-const OFT_ADDRESS: Record<string, Address> = {
-  [arbitrumSepolia.id]: "0x2DCA5DAb33C32EE5ccB31c0c02F017a31ee2d863",
-  [onematrix.id]: "0x54Df67faa5eb03D02F91906F6D54bDC9184cE3c8",
-}
+import { useAccount, useSwitchChain, useWalletClient } from "wagmi"
 
 const BridgeBox = () => {
   const { address, isConnected } = useAccount()
   const { data: walletClient } = useWalletClient()
+  const { switchChain } = useSwitchChain()
 
   const { clear, setInputChain, setOutputChain, setToken, swapChains } = useBridgeStore()
   const { inputChain, outputChain, token } = useBridgeStore()
@@ -31,7 +25,8 @@ const BridgeBox = () => {
     if (!address || !walletClient) return
     if (!inputAmount || !token || !inputChain || !outputChain) return
 
-    const oftAddress = OFT_ADDRESS[inputChain.id]
+    const inputTokenAddress = token.bridges?.[inputChain.id] as Address
+    const outputTokenAddress = token.bridges?.[outputChain.id] as Address
 
     const amount = parseEther(inputAmount)
     const toAddress = address
@@ -56,7 +51,7 @@ const BridgeBox = () => {
 
     const quoteSend = await publicClient.readContract({
       abi: OFTAbi,
-      address: oftAddress,
+      address: inputTokenAddress,
       args: [sendParam, false],
       functionName: "quoteSend",
     })
@@ -66,7 +61,7 @@ const BridgeBox = () => {
     const txHash = await walletClient.writeContract({
       abi: OFTAbi,
       account: address,
-      address: oftAddress,
+      address: inputTokenAddress,
       args: [sendParam, fee, address],
       functionName: "send",
       value: fee.nativeFee,
@@ -87,7 +82,7 @@ const BridgeBox = () => {
 
     const unwatch = outputClient.watchContractEvent({
       abi: OFTAbi,
-      address: OFT_ADDRESS[outputChain.id],
+      address: outputTokenAddress,
       eventName: "OFTReceived",
       onLogs: (logs) => {
         const log = logs[0]
@@ -126,7 +121,7 @@ const BridgeBox = () => {
       <Flex justifyContent="space-between">
         <Flex alignItems="center" gap={2}>
           <Text fontWeight="bold">Bridge</Text>
-          <TokenSelectDialog onChange={setToken} value={token} />
+          <TokenSelectDialog fromChain={inputChain} isDevnet onChange={setToken} value={token} />
         </Flex>
 
         <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">
@@ -159,13 +154,23 @@ const BridgeBox = () => {
               value={inputAmount}
             />
 
-            <ChainSelectPopover onChange={setInputChain} value={inputChain} />
+            <ChainSelectPopover onChange={setInputChain} shouldSync testnet={true} value={inputChain} />
           </Flex>
         </Stack>
 
         <Flex justifyContent="center" position="absolute" top="50%" transform="translateY(-50%)" w="full">
           <Center backgroundColor="bg.panel" borderRadius={6} p={1}>
-            <Button colorPalette="gray" onClick={swapChains} size="xs" variant="subtle">
+            <Button
+              colorPalette="gray"
+              onClick={() => {
+                const { inputChain } = swapChains()
+                if (inputChain) {
+                  switchChain({ chainId: inputChain.id })
+                }
+              }}
+              size="xs"
+              variant="subtle"
+            >
               <MdSwapVert />
             </Button>
           </Center>
@@ -191,7 +196,7 @@ const BridgeBox = () => {
               value={outputAmount}
             />
 
-            <ChainSelectPopover onChange={setOutputChain} value={outputChain} />
+            <ChainSelectPopover onChange={setOutputChain} testnet={true} value={outputChain} />
           </Flex>
         </Stack>
       </Stack>

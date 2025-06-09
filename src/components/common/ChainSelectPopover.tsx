@@ -4,23 +4,35 @@ import { onematrix } from "config/walletConnect"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { arbitrum, arbitrumSepolia } from "viem/chains"
+import { useSwitchChain } from "wagmi"
 
-export const bridgeChains: Chain[] = [
+const bridgeChains: Chain[] = [
   { ...arbitrum, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
-  { ...arbitrumSepolia, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
   onematrix,
+  { ...arbitrumSepolia, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
 ]
 
 type Props = {
   buttonProps?: ButtonProps
   onChange?: (chain: Chain | null) => void
+  shouldSync?: boolean
+  testnet?: boolean
   value?: Chain | null
 }
 
-const ChainSelectPopover = ({ buttonProps, onChange, value }: Props) => {
+const ChainSelectPopover = ({ buttonProps, onChange, shouldSync, testnet, value }: Props) => {
+  const { switchChain } = useSwitchChain()
+
   const { onClose, open, setOpen } = useDisclosure()
 
   const [currentChain, setCurrentChain] = useState<Chain | null>(null)
+
+  const availableChains = bridgeChains.filter((chain) => {
+    if (testnet !== undefined) {
+      return chain.testnet === testnet
+    }
+    return true
+  })
 
   const selectedChain = value !== undefined ? value : currentChain
 
@@ -52,7 +64,7 @@ const ChainSelectPopover = ({ buttonProps, onChange, value }: Props) => {
             <Popover.Arrow />
             <Popover.Body p={4}>
               <Stack gap={1}>
-                {bridgeChains.map((chain) => {
+                {availableChains.map((chain) => {
                   const isSelected = chain.id === selectedChain?.id
                   return (
                     <Button
@@ -63,6 +75,9 @@ const ChainSelectPopover = ({ buttonProps, onChange, value }: Props) => {
                         setCurrentChain(chain)
                         onChange?.(chain)
                         onClose()
+                        if (shouldSync) {
+                          switchChain({ chainId: chain.id })
+                        }
                       }}
                       px={2}
                       rounded="full"

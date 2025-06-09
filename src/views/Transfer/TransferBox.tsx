@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
 import { ERC20Abi, ISCAbi } from "contracts/abis"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { MdArrowDownward, MdClearAll } from "react-icons/md"
 import { useTransferStore } from "store/transferStore"
 import {
@@ -182,10 +182,6 @@ const TransferBox = () => {
     setInputAmount("")
   }
 
-  useEffect(() => {
-    setToken(null)
-  }, [setToken, fromChain, withAggreement.checked])
-
   return (
     <Stack borderRadius={16} borderWidth={1} p={4} w={420}>
       <Flex justifyContent="space-between">
@@ -197,7 +193,12 @@ const TransferBox = () => {
               opacity: 1,
               variant: "outline",
             }}
-            onChange={setFromChain}
+            onChange={(chain) => {
+              setFromChain(chain)
+              if (fromChain?.id !== chain?.id) {
+                setToken(null)
+              }
+            }}
             shouldSync={!withAggreement.checked}
             value={withAggreement.checked ? fromChain : chain}
           />
@@ -235,6 +236,7 @@ const TransferBox = () => {
 
             <TokenSelectDialog
               buttonProps={{ colorPalette: "purple", variant: "surface" }}
+              fromChain={fromChain}
               isDevnet={withAggreement.checked}
               onChange={setToken}
               value={token}
