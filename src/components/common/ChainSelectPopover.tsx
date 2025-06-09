@@ -1,41 +1,9 @@
 import { Button, ButtonProps, Image, Popover, Portal, Stack, useDisclosure } from "@chakra-ui/react"
 import { Chain } from "@rainbow-me/rainbowkit"
+import { onematrix } from "config/walletConnect"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
-import { defineChain } from "viem"
 import { arbitrum, arbitrumSepolia } from "viem/chains"
-
-export const onematrix: Chain = defineChain({
-  blockExplorers: {
-    default: { name: "OneMatrix Explorer", url: "https://devnet-explorer.hiee.us" },
-  },
-  iconUrl: "https://eth.blockscout.com/assets/favicon/favicon.ico",
-  id: 84004,
-  name: "OneMatrix",
-  nativeCurrency: { decimals: 18, name: "MTX", symbol: "MTX" },
-  rpcUrls: {
-    default: {
-      http: ["https://devnet-el-1.vinid.info"],
-    },
-  },
-  testnet: true,
-})
-
-export const onematrixL2: Chain = defineChain({
-  blockExplorers: {
-    default: { name: "OneMatrix Explorer", url: "https://devnet-l2-explorer.hiee.us" },
-  },
-  iconUrl: "https://zksync.blockscout.com/assets/favicon/favicon.ico",
-  id: 8400201,
-  name: "OneMatrix L2",
-  nativeCurrency: { decimals: 18, name: "1MTX", symbol: "1MTX" },
-  rpcUrls: {
-    default: {
-      http: ["https://devnet-l2.hiee.us"],
-    },
-  },
-  testnet: true,
-})
 
 export const bridgeChains: Chain[] = [
   { ...arbitrum, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },

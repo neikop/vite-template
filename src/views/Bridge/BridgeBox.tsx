@@ -1,8 +1,8 @@
 import { Button, Center, Flex, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
-import { onematrix } from "components/common/ChainSelectPopover"
 import { toaster } from "components/ui/toaster"
+import { onematrix } from "config/walletConnect"
 import { OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
 import { useState } from "react"
@@ -13,7 +13,7 @@ import { arbitrumSepolia } from "viem/chains"
 import { useAccount, useWalletClient } from "wagmi"
 
 const OFT_ADDRESS: Record<string, Address> = {
-  [arbitrumSepolia.id]: "0x2dca5dab33c32ee5ccb31c0c02f017a31ee2d863",
+  [arbitrumSepolia.id]: "0x2DCA5DAb33C32EE5ccB31c0c02F017a31ee2d863",
   [onematrix.id]: "0x54Df67faa5eb03D02F91906F6D54bDC9184cE3c8",
 }
 
@@ -60,9 +60,10 @@ const BridgeBox = () => {
       args: [sendParam, false],
       functionName: "quoteSend",
     })
+
     const fee = quoteSend as { lzTokenFee: bigint; nativeFee: bigint }
 
-    const txHash = await walletClient.sendTransaction({
+    const txHash = await walletClient.writeContract({
       abi: OFTAbi,
       account: address,
       address: oftAddress,
@@ -71,7 +72,36 @@ const BridgeBox = () => {
       value: fee.nativeFee,
     })
 
-    console.log(`${outputChain?.blockExplorers?.default.url}/tx/${txHash}`)
+    const result = await publicClient.waitForTransactionReceipt({ hash: txHash })
+
+    const log = result.logs[result.logs.length - 1]
+    const iface = new ethers.Interface(OFTAbi)
+    const decodedOFTSent = iface.decodeEventLog("OFTSent", log.data, log.topics)
+
+    console.log(`${inputChain?.blockExplorers?.default.url}/tx/${log.transactionHash}`)
+
+    const outputClient = createPublicClient({
+      chain: outputChain,
+      transport: http(),
+    })
+
+    const unwatch = outputClient.watchContractEvent({
+      abi: OFTAbi,
+      address: OFT_ADDRESS[outputChain.id],
+      eventName: "OFTReceived",
+      onLogs: (logs) => {
+        const log = logs[0]
+        const iface = new ethers.Interface(OFTAbi)
+        const decodedOFTReceived = iface.decodeEventLog("OFTReceived", log.data, log.topics)
+
+        if (decodedOFTSent.guid === decodedOFTReceived.guid) {
+          console.log(`${outputChain?.blockExplorers?.default.url}/tx/${log.transactionHash}`)
+
+          unwatch()
+        }
+      },
+    })
+
     return txHash
   }
 
