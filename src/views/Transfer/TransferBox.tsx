@@ -190,11 +190,16 @@ const TransferBox = () => {
           <ChainSelectPopover
             buttonProps={{
               colorPalette: "gray",
-              disabled: !withAggreement.checked,
               opacity: 1,
               variant: "outline",
             }}
-            onChange={setFromChain}
+            onChange={(chain) => {
+              setFromChain(chain)
+              if (fromChain?.id !== chain?.id) {
+                setToken(null)
+              }
+            }}
+            shouldSync={!withAggreement.checked}
             value={withAggreement.checked ? fromChain : chain}
           />
         </Flex>
@@ -231,6 +236,7 @@ const TransferBox = () => {
 
             <TokenSelectDialog
               buttonProps={{ colorPalette: "purple", variant: "surface" }}
+              fromChain={fromChain}
               isDevnet={withAggreement.checked}
               onChange={setToken}
               value={token}

@@ -6,6 +6,7 @@ type TokensPagination = {
 }
 
 type TokensParams = {
+  chainId?: number | string
   page?: number
   pageSize?: number
   query?: string

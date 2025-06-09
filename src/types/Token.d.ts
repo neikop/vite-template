@@ -2,6 +2,7 @@ type Address = `0x${string}`
 
 type Token = {
   address: Address
+  bridges?: Record<number, Address>
   chainId: number
   decimals: number
   intent?: {

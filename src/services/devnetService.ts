@@ -1,3 +1,11 @@
+const filterData = (items: Token[], params?: TokensParams) => {
+  let filteredItems = items
+  if (params?.chainId) {
+    filteredItems = filteredItems.filter((token) => token.chainId === params.chainId)
+  }
+  return filteredItems
+}
+
 const fetchTokens = (params?: TokensParams): Promise<TokensPagination> => {
   const data: Token[] = [
     {
@@ -13,29 +21,40 @@ const fetchTokens = (params?: TokensParams): Promise<TokensPagination> => {
       symbol: "USDC",
     },
     {
-      address: "0x326F07743bf73c6E7b7A08Cf70d8a3d41a0c196c",
-      chainId: 84004,
+      address: "0x2DCA5DAb33C32EE5ccB31c0c02F017a31ee2d863",
+      bridges: {
+        421_614: "0x2DCA5DAb33C32EE5ccB31c0c02F017a31ee2d863",
+        84004: "0x54Df67faa5eb03D02F91906F6D54bDC9184cE3c8",
+      },
+      chainId: 421_614,
       decimals: 18,
-      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
-      name: "WETH",
-      symbol: "WETH",
+      logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
+      name: "aOFT",
+      symbol: "aOFT",
     },
     {
-      address: "0xf0cd672A24c959C9b049812754E4268AC411501c",
+      address: "0x54Df67faa5eb03D02F91906F6D54bDC9184cE3c8",
+      bridges: {
+        421_614: "0x2DCA5DAb33C32EE5ccB31c0c02F017a31ee2d863",
+        84004: "0x54Df67faa5eb03D02F91906F6D54bDC9184cE3c8",
+      },
       chainId: 84004,
       decimals: 18,
-      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/28850.png",
-      name: "MyToken",
-      symbol: "MTK",
+      logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
+      name: "OFT",
+      symbol: "OFT",
     },
   ]
 
   const { page = 1, pageSize = 10 } = params ?? {}
+
+  const filteredTokens = filterData(data, params)
+
   return Promise.resolve({
     pagination: {
-      totalItems: data.length,
+      totalItems: filteredTokens.length,
     },
-    tokens: data.slice((page - 1) * pageSize, page * pageSize),
+    tokens: filteredTokens.slice((page - 1) * pageSize, page * pageSize),
   })
 }
 
