@@ -1,15 +1,17 @@
 import { Center, Flex, Text } from "@chakra-ui/react"
-import { JSX } from "react"
-import { Link, useLocation } from "react-router"
+import { JSX, ReactNode } from "react"
+import { RxOpenInNewWindow } from "react-icons/rx"
+import { Link, LinkProps, useLocation } from "react-router"
 import { privateRoute } from "routes"
 
 type MenuItemProps = {
   icon?: JSX.Element
-  name?: string
+  linkProps?: Partial<LinkProps>
+  name?: ReactNode
   path: string
 }
 
-const MenuItem = ({ name, path }: MenuItemProps) => {
+const MenuItem = ({ linkProps, name, path }: MenuItemProps) => {
   const location = useLocation()
 
   const isHome = path === "/"
@@ -17,7 +19,7 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
   const isSelected = isHome ? location.pathname === path : isContain
 
   return (
-    <Link to={path}>
+    <Link to={path} {...linkProps}>
       <Center
         _hover={{ backgroundColor: isSelected ? "bg.primary" : "bg.muted" }}
         borderTopColor={isSelected ? "primary.main" : "transparent"}
@@ -40,7 +42,15 @@ const AppSidebar = () => {
     <Flex alignItems="stretch" h="full">
       <MenuItem {...privateRoute.transfer} />
       <MenuItem {...privateRoute.bridge} />
-      <MenuItem {...privateRoute.multiSign} />
+      <MenuItem
+        linkProps={{ target: "_blank" }}
+        name={
+          <Flex gap={1}>
+            Swap <RxOpenInNewWindow />
+          </Flex>
+        }
+        path="https://one-matrix-uni-v2-interface.pages.dev"
+      />
     </Flex>
   )
 }
