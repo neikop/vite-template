@@ -71,7 +71,9 @@ const BridgeBox = () => {
 
   const handleBridge = async () => {
     if (!address || !walletClient) return
-    if (!inputAmount || !token || !inputChain || !outputChain) return
+    if (!inputAmount || !token || !inputChain || !outputChain) {
+      throw Error("Missing information, please complete the empty fields")
+    }
 
     setReceiveTxHash("")
     setLoadingTxHash(false)
@@ -158,6 +160,13 @@ const BridgeBox = () => {
 
   const bridgeMutation = useMutation({
     mutationFn: handleBridge,
+    onError: (error) => {
+      toaster.create({
+        description: error.message.split("\n")[0] || "There was an error sending your transaction",
+        title: error.name || "Failed",
+        type: "error",
+      })
+    },
     onSuccess: () => {
       toaster.create({
         description: "Your transaction was successfully sent",

@@ -39,9 +39,13 @@ const TransferBox = () => {
   const [inputAmount, setInputAmount] = useState("")
   const usingIntent = useCheckbox({ defaultChecked: true })
 
+  const selectedChain = usingIntent.checked ? fromChain : chain
+
   const handleTransferWithAggrement = async () => {
     if (!address || !walletClient) return
-    if (!inputAmount || !token || !fromChain || !receiveAddress) return
+    if (!inputAmount || !token || !fromChain || !receiveAddress) {
+      throw Error("Missing information, please complete the empty fields")
+    }
 
     const iscAddress = token.intent?.isc as Address
     const handlerAddress = token.intent?.handler as Address
@@ -169,6 +173,13 @@ const TransferBox = () => {
 
   const transferMutation = useMutation({
     mutationFn: usingIntent.checked ? handleTransferWithAggrement : handleTransferWithout,
+    onError: (error) => {
+      toaster.create({
+        description: error.message.split("\n")[0] || "There was an error sending your transaction",
+        title: error.name || "Failed",
+        type: "error",
+      })
+    },
     onSuccess: () => {
       toaster.create({
         description: "Your transaction was successfully sent",
@@ -203,7 +214,7 @@ const TransferBox = () => {
                 }
               }}
               shouldSync={!usingIntent.checked}
-              value={usingIntent.checked ? fromChain : chain}
+              value={selectedChain}
             />
           </Flex>
 
@@ -218,7 +229,7 @@ const TransferBox = () => {
               <Text fontSize="sm" fontWeight="semibold">
                 Amount
               </Text>
-              <BalanceDisplay chain={chain} onMax={(balance) => setInputAmount(balance)} token={token} />
+              <BalanceDisplay chain={selectedChain} onMax={(balance) => setInputAmount(balance)} token={token} />
             </Flex>
             <Flex gap={2} justifyContent="space-between">
               <NumericInput
@@ -304,7 +315,7 @@ const TransferBox = () => {
             <Text>Tx Hash: </Text>
             <Link
               fontFamily="mono"
-              href={`${(usingIntent.checked ? fromChain : chain)?.blockExplorers?.default.url}/tx/${transferMutation.data}`}
+              href={`${selectedChain?.blockExplorers?.default.url}/tx/${transferMutation.data}`}
               target="_blank"
               w="fit-content"
             >
