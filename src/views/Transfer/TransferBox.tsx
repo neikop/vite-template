@@ -1,7 +1,7 @@
 import { Button, Center, Checkbox, Flex, Input, Stack, Text, useCheckbox } from "@chakra-ui/react"
 import { AbiCoder as AbiCoderV6 } from "@ethersproject/abi-v6"
 import { useMutation } from "@tanstack/react-query"
-import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
+import { BalanceDisplay, ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
 import { ERC20Abi, ISCAbi } from "contracts/abis"
 import { useState } from "react"
@@ -215,12 +215,7 @@ const TransferBox = () => {
             <Text fontSize="sm" fontWeight="semibold">
               Amount
             </Text>
-            <Flex gap={2}>
-              <Text fontSize="sm">Balance: 0</Text>
-              <Button colorPalette="purple" variant="text">
-                Max
-              </Button>
-            </Flex>
+            <BalanceDisplay chain={chain} token={token} />
           </Flex>
           <Flex gap={2} justifyContent="space-between">
             <NumericInput

@@ -1,6 +1,6 @@
 import { Button, Center, Flex, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
-import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
+import { BalanceDisplay, ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
 import { ERC20Abi, OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
@@ -179,12 +179,7 @@ const BridgeBox = () => {
             <Text fontSize="sm" fontWeight="semibold">
               From
             </Text>
-            <Flex gap={2}>
-              <Text fontSize="sm">Balance: 0</Text>
-              <Button colorPalette="purple" variant="text">
-                Max
-              </Button>
-            </Flex>
+            <BalanceDisplay chain={inputChain} token={token} />
           </Flex>
           <Flex gap={2} justifyContent="space-between">
             <NumericInput
