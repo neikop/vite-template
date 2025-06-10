@@ -7,10 +7,11 @@ import { useAccount } from "wagmi"
 
 type Props = {
   chain?: Chain | null
+  onMax?: (balance: string) => void
   token?: null | Token
 }
 
-const BalanceDisplay = ({ chain, token }: Props) => {
+const BalanceDisplay = ({ chain, onMax, token }: Props) => {
   const { address } = useAccount()
 
   const fetchBalance = async (): Promise<bigint> => {
@@ -33,10 +34,18 @@ const BalanceDisplay = ({ chain, token }: Props) => {
     queryKey: ["fetchBalance", { address, chain, token }],
   })
 
+  const formattedBalance = formatEther(balance || 0n)
+
   return (
     <Flex gap={2}>
-      <Text fontSize="sm">Balance: {formatEther(balance || 0n)}</Text>
-      <Button colorPalette="purple" variant="text">
+      <Text fontSize="sm">Balance: {formattedBalance}</Text>
+      <Button
+        colorPalette="purple"
+        onClick={() => {
+          onMax?.(formattedBalance)
+        }}
+        variant="text"
+      >
         Max
       </Button>
     </Flex>

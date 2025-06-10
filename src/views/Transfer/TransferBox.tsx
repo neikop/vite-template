@@ -217,7 +217,7 @@ const TransferBox = () => {
             <Text fontSize="sm" fontWeight="semibold">
               Amount
             </Text>
-            <BalanceDisplay chain={chain} token={token} />
+            <BalanceDisplay chain={chain} onMax={(balance) => setInputAmount(balance)} token={token} />
           </Flex>
           <Flex gap={2} justifyContent="space-between">
             <NumericInput

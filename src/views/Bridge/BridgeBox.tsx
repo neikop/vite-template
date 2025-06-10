@@ -193,7 +193,7 @@ const BridgeBox = () => {
               <Text fontSize="sm" fontWeight="semibold">
                 From
               </Text>
-              <BalanceDisplay chain={inputChain} token={token} />
+              <BalanceDisplay chain={inputChain} onMax={(balance) => setInputAmount(balance)} token={token} />
             </Flex>
             <Flex gap={2} justifyContent="space-between">
               <NumericInput
