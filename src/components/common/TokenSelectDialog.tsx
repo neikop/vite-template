@@ -26,13 +26,14 @@ import { useAccount } from "wagmi"
 
 type Props = {
   buttonProps?: ButtonProps
+  feature?: "bridge" | "transfer"
   fromChain?: Chain | null
   isDevnet?: boolean
   onChange?: (chain: null | Token) => void
   value?: null | Token
 }
 
-const TokenSelectDialog = ({ buttonProps, fromChain, isDevnet, onChange, value }: Props) => {
+const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange, value }: Props) => {
   const dialog = useDialog()
   const { chainId } = useAccount()
 
@@ -55,12 +56,13 @@ const TokenSelectDialog = ({ buttonProps, fromChain, isDevnet, onChange, value }
       const service = isDevnet ? devnetService : kyberService
       return service.fetchTokens({
         chainId: isDevnet ? fromChain?.id : chainId,
+        feature,
         page,
         pageSize: 20,
         query: debouncedSearchText,
       })
     },
-    queryKey: ["kyberService.fetchTokens", { chainId, fromChain, query: debouncedSearchText }],
+    queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
   })
 
   return (

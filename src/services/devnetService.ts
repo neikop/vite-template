@@ -3,6 +3,9 @@ const filterData = (items: Token[], params?: TokensParams) => {
   if (params?.chainId) {
     filteredItems = filteredItems.filter((token) => token.chainId === params.chainId)
   }
+  if (params?.feature === "bridge") {
+    filteredItems = filteredItems.filter((token) => !!token.bridges)
+  }
   return filteredItems
 }
 

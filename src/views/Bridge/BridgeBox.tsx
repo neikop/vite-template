@@ -165,7 +165,7 @@ const BridgeBox = () => {
       <Flex justifyContent="space-between">
         <Flex alignItems="center" gap={2}>
           <Text fontWeight="bold">Bridge</Text>
-          <TokenSelectDialog fromChain={inputChain} isDevnet onChange={setToken} value={token} />
+          <TokenSelectDialog feature="bridge" fromChain={inputChain} isDevnet onChange={setToken} value={token} />
         </Flex>
 
         <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">

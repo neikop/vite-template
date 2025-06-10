@@ -7,6 +7,7 @@ type TokensPagination = {
 
 type TokensParams = {
   chainId?: number | string
+  forBridge?: boolean
   page?: number
   pageSize?: number
   query?: string
