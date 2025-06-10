@@ -43,9 +43,9 @@ const fetchTokens = (params?: TokensParams): Promise<TokensPagination> => {
       },
       chainId: 84004,
       decimals: 18,
-      logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
-      name: "OFT",
-      symbol: "OFT",
+      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      name: "USDT",
+      symbol: "USDT",
     },
   ]
 

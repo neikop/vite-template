@@ -9,7 +9,7 @@ Object.assign(berachain, { iconUrl: "https://s2.coinmarketcap.com/static/img/coi
 
 export const onematrix: Chain = defineChain({
   blockExplorers: {
-    default: { name: "OneMatrix Explorer", url: "https://devnet-explorer.hiee.us" },
+    default: { name: "OneMatrix Explorer", url: "https://devnet-explorer.vinid.info" },
   },
   iconUrl: "https://eth.blockscout.com/assets/favicon/favicon.ico",
   id: 84004,

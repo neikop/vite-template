@@ -1,4 +1,4 @@
-import { Button, Center, Flex, Stack, Text } from "@chakra-ui/react"
+import { Button, Center, Flex, Link, SimpleGrid, Spinner, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { BalanceDisplay, ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
@@ -7,7 +7,9 @@ import { ERC20Abi, OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
 import { useState } from "react"
 import { MdClearAll, MdSwapVert } from "react-icons/md"
+import { RxOpenInNewWindow } from "react-icons/rx"
 import { useBridgeStore } from "store/bridgeStore"
+import { shortenAddress } from "utils/common"
 import { createPublicClient, http, parseEther } from "viem"
 import { useAccount, useSwitchChain, useWalletClient } from "wagmi"
 
@@ -64,9 +66,15 @@ const BridgeBox = () => {
     }
   }
 
+  const [receiveTxHash, setReceiveTxHash] = useState("")
+  const [loadingTxHash, setLoadingTxHash] = useState(false)
+
   const handleBridge = async () => {
     if (!address || !walletClient) return
     if (!inputAmount || !token || !inputChain || !outputChain) return
+
+    setReceiveTxHash("")
+    setLoadingTxHash(false)
 
     const inputOFTAddress = token.bridges?.[inputChain.id] as Address
     const outputOFTAddress = token.bridges?.[outputChain.id] as Address
@@ -125,6 +133,7 @@ const BridgeBox = () => {
       transport: http(),
     })
 
+    setLoadingTxHash(true)
     const unwatch = outputClient.watchContractEvent({
       abi: OFTAbi,
       address: outputOFTAddress,
@@ -137,6 +146,8 @@ const BridgeBox = () => {
         if (decodedOFTSent.guid === decodedOFTReceived.guid) {
           console.log(`${outputChain?.blockExplorers?.default.url}/tx/${log.transactionHash}`)
 
+          setReceiveTxHash(log.transactionHash!)
+          setLoadingTxHash(false)
           unwatch()
         }
       },
@@ -163,107 +174,146 @@ const BridgeBox = () => {
   }
 
   return (
-    <Stack borderRadius={16} borderWidth={1} p={4} w={420}>
-      <Flex justifyContent="space-between">
-        <Flex alignItems="center" gap={2}>
-          <Text fontWeight="bold">Bridge</Text>
-          <TokenSelectDialog feature="bridge" fromChain={inputChain} isDevnet onChange={setToken} value={token} />
+    <Stack gap={6}>
+      <Stack borderRadius={16} borderWidth={1} p={4} w={420}>
+        <Flex justifyContent="space-between">
+          <Flex alignItems="center" gap={2}>
+            <Text fontWeight="bold">Bridge</Text>
+            <TokenSelectDialog feature="bridge" fromChain={inputChain} isDevnet onChange={setToken} value={token} />
+          </Flex>
+
+          <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">
+            <MdClearAll />
+          </Button>
         </Flex>
 
-        <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">
-          <MdClearAll />
-        </Button>
-      </Flex>
+        <Stack gap={4} position="relative">
+          <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
+            <Flex justifyContent="space-between">
+              <Text fontSize="sm" fontWeight="semibold">
+                From
+              </Text>
+              <BalanceDisplay chain={inputChain} token={token} />
+            </Flex>
+            <Flex gap={2} justifyContent="space-between">
+              <NumericInput
+                border="none"
+                fontSize="2xl"
+                fontWeight="semibold"
+                h={8}
+                onChange={(event) => setInputAmount(event.target.value)}
+                p={0}
+                placeholder="0.0"
+                value={inputAmount}
+              />
 
-      <Stack gap={4} position="relative">
-        <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
-          <Flex justifyContent="space-between">
-            <Text fontSize="sm" fontWeight="semibold">
-              From
-            </Text>
-            <BalanceDisplay chain={inputChain} token={token} />
-          </Flex>
-          <Flex gap={2} justifyContent="space-between">
-            <NumericInput
-              border="none"
-              fontSize="2xl"
-              fontWeight="semibold"
-              h={8}
-              onChange={(event) => setInputAmount(event.target.value)}
-              p={0}
-              placeholder="0.0"
-              value={inputAmount}
-            />
+              <ChainSelectPopover
+                onChange={(chain) => {
+                  setInputChain(chain)
+                  setToken(null)
+                }}
+                shouldSync
+                testnet={true}
+                value={inputChain}
+              />
+            </Flex>
+          </Stack>
 
-            <ChainSelectPopover
-              onChange={(chain) => {
-                setInputChain(chain)
-                setToken(null)
-              }}
-              shouldSync
-              testnet={true}
-              value={inputChain}
-            />
+          <Flex justifyContent="center" position="absolute" top="50%" transform="translateY(-50%)" w="full">
+            <Center backgroundColor="bg.panel" borderRadius={6} p={1}>
+              <Button
+                colorPalette="gray"
+                onClick={() => {
+                  const { inputChain } = swapChains()
+                  if (inputChain) {
+                    switchChain({ chainId: inputChain.id })
+                  }
+                  setToken(null)
+                }}
+                size="xs"
+                variant="subtle"
+              >
+                <MdSwapVert />
+              </Button>
+            </Center>
           </Flex>
+
+          <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
+            <Flex justifyContent="space-between">
+              <Text fontSize="sm" fontWeight="semibold">
+                To
+              </Text>
+            </Flex>
+            <Flex justifyContent="space-between">
+              <NumericInput
+                border="none"
+                caretColor="transparent"
+                color="textSecondary"
+                fontSize="2xl"
+                fontWeight="semibold"
+                h={8}
+                p={0}
+                placeholder="0.0"
+                readOnly={true}
+                value={outputAmount}
+              />
+
+              <ChainSelectPopover onChange={setOutputChain} testnet={true} value={outputChain} />
+            </Flex>
+          </Stack>
         </Stack>
 
-        <Flex justifyContent="center" position="absolute" top="50%" transform="translateY(-50%)" w="full">
-          <Center backgroundColor="bg.panel" borderRadius={6} p={1}>
-            <Button
-              colorPalette="gray"
-              onClick={() => {
-                const { inputChain } = swapChains()
-                if (inputChain) {
-                  switchChain({ chainId: inputChain.id })
-                }
-                setToken(null)
-              }}
-              size="xs"
-              variant="subtle"
+        <Stack pt={9}>
+          <Button
+            borderRadius={16}
+            colorPalette="purple"
+            disabled={!isConnected}
+            loading={bridgeMutation.isPending}
+            onClick={() => bridgeMutation.mutateAsync()}
+            size="xl"
+            variant="subtle"
+          >
+            Bridge
+          </Button>
+        </Stack>
+      </Stack>
+
+      {bridgeMutation.isSuccess && (
+        <Stack borderRadius={16} borderWidth={1} fontSize="sm" p={4} w={420}>
+          <Text color="primary.main" fontWeight="semibold">
+            Transaction Receipt:
+          </Text>
+
+          <SimpleGrid gap={2} templateColumns="80px 1fr">
+            <Text>Send: </Text>
+            <Link
+              fontFamily="mono"
+              href={`${inputChain?.blockExplorers?.default.url}/tx/${bridgeMutation.data}`}
+              target="_blank"
+              w="fit-content"
             >
-              <MdSwapVert />
-            </Button>
-          </Center>
-        </Flex>
-
-        <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
-          <Flex justifyContent="space-between">
-            <Text fontSize="sm" fontWeight="semibold">
-              To
-            </Text>
-          </Flex>
-          <Flex justifyContent="space-between">
-            <NumericInput
-              border="none"
-              caretColor="transparent"
-              color="textSecondary"
-              fontSize="2xl"
-              fontWeight="semibold"
-              h={8}
-              p={0}
-              placeholder="0.0"
-              readOnly={true}
-              value={outputAmount}
-            />
-
-            <ChainSelectPopover onChange={setOutputChain} testnet={true} value={outputChain} />
-          </Flex>
+              {shortenAddress(bridgeMutation.data)}
+              <RxOpenInNewWindow />
+            </Link>
+            <Text>Receive:</Text>
+            <Link
+              fontFamily="mono"
+              href={`${outputChain?.blockExplorers?.default.url}/tx/${receiveTxHash}`}
+              target="_blank"
+              w="fit-content"
+            >
+              {loadingTxHash ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  {shortenAddress(receiveTxHash)}
+                  <RxOpenInNewWindow />
+                </>
+              )}
+            </Link>
+          </SimpleGrid>
         </Stack>
-      </Stack>
-
-      <Stack pt={9}>
-        <Button
-          borderRadius={16}
-          colorPalette="purple"
-          disabled={!isConnected}
-          loading={bridgeMutation.isPending}
-          onClick={() => bridgeMutation.mutateAsync()}
-          size="xl"
-          variant="subtle"
-        >
-          Bridge
-        </Button>
-      </Stack>
+      )}
     </Stack>
   )
 }
