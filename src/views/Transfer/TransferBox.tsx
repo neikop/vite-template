@@ -35,7 +35,7 @@ const TransferBox = () => {
   const { fromChain, receiveAddress, token } = useTransferStore()
 
   const [inputAmount, setInputAmount] = useState("")
-  const withAggreement = useCheckbox({ defaultChecked: true })
+  const usingIntent = useCheckbox({ defaultChecked: true })
 
   const handleTransferWithAggrement = async () => {
     if (!address || !walletClient) return
@@ -168,7 +168,7 @@ const TransferBox = () => {
   }
 
   const transferMutation = useMutation({
-    mutationFn: withAggreement.checked ? handleTransferWithAggrement : handleTransferWithout,
+    mutationFn: usingIntent.checked ? handleTransferWithAggrement : handleTransferWithout,
     onSuccess: () => {
       toaster.create({
         description: "Your transaction was successfully sent",
@@ -201,8 +201,8 @@ const TransferBox = () => {
                 setToken(null)
               }
             }}
-            shouldSync={!withAggreement.checked}
-            value={withAggreement.checked ? fromChain : chain}
+            shouldSync={!usingIntent.checked}
+            value={usingIntent.checked ? fromChain : chain}
           />
         </Flex>
 
@@ -234,7 +234,7 @@ const TransferBox = () => {
             <TokenSelectDialog
               buttonProps={{ colorPalette: "purple", variant: "surface" }}
               fromChain={fromChain}
-              isDevnet={withAggreement.checked}
+              isDevnet={usingIntent.checked}
               onChange={setToken}
               value={token}
             />
@@ -272,10 +272,10 @@ const TransferBox = () => {
 
       <Stack gap={4}>
         <Flex>
-          <Checkbox.RootProvider colorPalette="purple" cursor="pointer" value={withAggreement} variant="outline">
+          <Checkbox.RootProvider colorPalette="purple" cursor="pointer" value={usingIntent} variant="outline">
             <Checkbox.HiddenInput />
             <Checkbox.Control />
-            <Checkbox.Label>Transfer with agreement</Checkbox.Label>
+            <Checkbox.Label>Using Intent</Checkbox.Label>
           </Checkbox.RootProvider>
         </Flex>
 
