@@ -41,6 +41,19 @@
     ],
     "stateMutability": "view"
   },
+	 {
+    "type": "function",
+    "name": "symbol",
+    "inputs": [],
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
 	{
 		"type": "function",
 		"name": "totalSupply",

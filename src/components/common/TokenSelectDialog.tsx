@@ -19,9 +19,12 @@ import { Chain } from "@rainbow-me/rainbowkit"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
-import { useState } from "react"
+import { ERC20Abi } from "contracts/abis"
+import { uniqBy } from "lodash"
+import { useEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { devnetService, kyberService } from "services"
+import { createPublicClient, http, isAddress } from "viem"
 import { useAccount } from "wagmi"
 
 type Props = {
@@ -65,6 +68,51 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
     queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
   })
 
+  const [fetchedTokens, setFetchedTokens] = useState<Token[]>([])
+  const [loadingTokens, setLoadingTokens] = useState(false)
+
+  const availableTokens = useMemo(() => {
+    let allTokens = (data?.pages.flatMap((page) => page.tokens) ?? []).concat(fetchedTokens)
+    if (isAddress(debouncedSearchText)) {
+      allTokens = allTokens.filter((token) => token.address === debouncedSearchText)
+    }
+    return allTokens
+  }, [data, fetchedTokens, debouncedSearchText])
+
+  useEffect(() => {
+    const getTokenInfo = async (chain: Chain, tokenAddress: Address) => {
+      const publicClient = createPublicClient({
+        chain: chain,
+        transport: http(),
+      })
+
+      setLoadingTokens(true)
+      const [symbol, decimals] = await Promise.all([
+        publicClient.readContract({ abi: ERC20Abi, address: tokenAddress, functionName: "symbol" }),
+        publicClient.readContract({ abi: ERC20Abi, address: tokenAddress, functionName: "decimals" }),
+      ]).finally(() => {
+        setLoadingTokens(false)
+      })
+
+      const newToken = {
+        address: tokenAddress,
+        chainId: chain.id,
+        decimals,
+        logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
+        name: symbol,
+        symbol,
+      } as Token
+
+      setFetchedTokens((tokens) => {
+        return uniqBy(tokens.concat(newToken), "address")
+      })
+    }
+
+    if (fromChain && isAddress(debouncedSearchText)) {
+      getTokenInfo(fromChain, debouncedSearchText)
+    }
+  }, [fromChain, debouncedSearchText])
+
   return (
     <Dialog.RootProvider placement="top" scrollBehavior="inside" size="sm" value={dialog}>
       <Dialog.Trigger asChild>
@@ -106,43 +154,41 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
                   />
                 </Box>
                 <Stack gap={2} minH={240}>
-                  {data?.pages
-                    .flatMap((page) => page.tokens)
-                    .map((token) => {
-                      const isSelected = token.address === selectedToken?.address
-                      return (
-                        <Button
-                          borderRadius={8}
-                          colorPalette={isSelected ? "purple" : "gray"}
-                          justifyContent="flex-start"
-                          key={`${token.chainId}/${token.address}`}
-                          minH={12}
-                          onClick={() => {
-                            setCurrentToken(token)
-                            onChange?.(token)
-                            dialog.setOpen(false)
-                          }}
-                          overflow="hidden"
-                          px={2}
-                          variant={isSelected ? "subtle" : "ghost"}
-                        >
-                          <Image h={6} rounded="full" src={token.logoURI} w={6} />
-                          <Box flex={1} overflow="hidden" textAlign="left">
-                            <Text>{token.symbol}</Text>
-                            <Flex flex={1} gap={4} justifyContent="space-between">
-                              <Text color="textSecondary" fontSize="xs" fontWeight="normal" truncate={true}>
-                                {token.name}
-                              </Text>
-                              <Text color="textSecondary" fontSize="xs" fontWeight="normal">
-                                ChainID: {token.chainId}
-                              </Text>
-                            </Flex>
-                          </Box>
-                        </Button>
-                      )
-                    })}
+                  {availableTokens.map((token) => {
+                    const isSelected = token.address === selectedToken?.address
+                    return (
+                      <Button
+                        borderRadius={8}
+                        colorPalette={isSelected ? "purple" : "gray"}
+                        justifyContent="flex-start"
+                        key={`${token.chainId}/${token.address}`}
+                        minH={12}
+                        onClick={() => {
+                          setCurrentToken(token)
+                          onChange?.(token)
+                          dialog.setOpen(false)
+                        }}
+                        overflow="hidden"
+                        px={2}
+                        variant={isSelected ? "subtle" : "ghost"}
+                      >
+                        <Image h={6} rounded="full" src={token.logoURI} w={6} />
+                        <Box flex={1} overflow="hidden" textAlign="left">
+                          <Text>{token.symbol}</Text>
+                          <Flex flex={1} gap={4} justifyContent="space-between">
+                            <Text color="textSecondary" fontSize="xs" fontWeight="normal" truncate={true}>
+                              {token.name}
+                            </Text>
+                            <Text color="textSecondary" fontSize="xs" fontWeight="normal">
+                              ChainID: {token.chainId}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      </Button>
+                    )
+                  })}
 
-                  {isFetching && (
+                  {(isFetching || loadingTokens) && (
                     <Flex alignItems="center" gap={2} h={12} px={1}>
                       <SkeletonCircle size={8} />
                       <SkeletonText noOfLines={2} />

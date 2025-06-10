@@ -45,7 +45,7 @@ const AppSidebar = () => {
       <MenuItem
         linkProps={{ target: "_blank" }}
         name={
-          <Flex gap={1}>
+          <Flex as="span" gap={1}>
             Swap <RxOpenInNewWindow />
           </Flex>
         }
