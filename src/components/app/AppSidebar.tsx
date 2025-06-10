@@ -40,6 +40,7 @@ const AppSidebar = () => {
     <Flex alignItems="stretch" h="full">
       <MenuItem {...privateRoute.transfer} />
       <MenuItem {...privateRoute.bridge} />
+      <MenuItem {...privateRoute.multiSign} />
     </Flex>
   )
 }
