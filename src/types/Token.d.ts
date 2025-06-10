@@ -9,6 +9,7 @@ type Token = {
     handler: Address
     isc: Address
   }
+  isImport?: boolean
   logoURI: string
   name: string
   symbol: string

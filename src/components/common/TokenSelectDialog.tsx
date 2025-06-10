@@ -20,6 +20,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
 import { ERC20Abi } from "contracts/abis"
+import { uniqBy } from "lodash"
 import { useEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { devnetService, kyberService } from "services"
@@ -69,15 +70,17 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
   })
 
   const { addToken, tokens: importedTokens } = useTokensStore()
+
+  const [fetchedTokens, setFetchedTokens] = useState<Token[]>(importedTokens)
   const [loadingTokens, setLoadingTokens] = useState(false)
 
   const availableTokens = useMemo(() => {
-    let allTokens = (data?.pages.flatMap((page) => page.tokens) ?? []).concat(importedTokens)
+    let allTokens = (data?.pages.flatMap((page) => page.tokens) ?? []).concat(fetchedTokens)
     if (isAddress(debouncedSearchText)) {
       allTokens = allTokens.filter((token) => token.address === debouncedSearchText)
     }
     return allTokens
-  }, [data, importedTokens, debouncedSearchText])
+  }, [data, fetchedTokens, debouncedSearchText])
 
   useEffect(() => {
     const getTokenInfo = async (chain: Chain, tokenAddress: Address) => {
@@ -94,14 +97,19 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
         setLoadingTokens(false)
       })
 
-      addToken({
+      const newToken = {
         address: tokenAddress,
         chainId: chain.id,
         decimals,
+        isImport: true,
         logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
         name: symbol,
         symbol,
-      } as Token)
+      } as Token
+
+      setFetchedTokens((tokens) => {
+        return uniqBy(tokens.concat(newToken), "address")
+      })
     }
 
     if (fromChain && isAddress(debouncedSearchText)) {
@@ -163,6 +171,7 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
                           setCurrentToken(token)
                           onChange?.(token)
                           dialog.setOpen(false)
+                          if (token.isImport) addToken(token)
                         }}
                         overflow="hidden"
                         px={2}
