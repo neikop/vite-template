@@ -37,8 +37,10 @@ const BalanceDisplay = ({ chain, onMax, token }: Props) => {
   const formattedBalance = formatEther(balance || 0n)
 
   return (
-    <Flex gap={2}>
-      <Text fontSize="sm">Balance: {formattedBalance}</Text>
+    <Flex gap={2} maxW={240}>
+      <Text fontSize="sm" truncate={true}>
+        Balance: {formattedBalance}
+      </Text>
       <Button
         colorPalette="purple"
         onClick={() => {

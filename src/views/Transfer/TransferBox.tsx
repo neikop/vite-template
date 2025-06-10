@@ -1,4 +1,4 @@
-import { Button, Center, Checkbox, Flex, Input, Stack, Text, useCheckbox } from "@chakra-ui/react"
+import { Button, Center, Checkbox, Flex, Input, Link, SimpleGrid, Stack, Text, useCheckbox } from "@chakra-ui/react"
 import { AbiCoder as AbiCoderV6 } from "@ethersproject/abi-v6"
 import { useMutation } from "@tanstack/react-query"
 import { BalanceDisplay, ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
@@ -7,7 +7,9 @@ import { queryClient } from "config/queryClient"
 import { ERC20Abi, ISCAbi } from "contracts/abis"
 import { useState } from "react"
 import { MdArrowDownward, MdClearAll } from "react-icons/md"
+import { RxOpenInNewWindow } from "react-icons/rx"
 import { useTransferStore } from "store/transferStore"
+import { shortenAddress } from "utils/common"
 import {
   createPublicClient,
   createWalletClient,
@@ -146,7 +148,6 @@ const TransferBox = () => {
       to: tokenAddress,
     })
 
-    console.log(`${fromChain?.blockExplorers?.default.url}/tx/${txHash}`)
     return txHash
   }
 
@@ -163,7 +164,6 @@ const TransferBox = () => {
       functionName: "transfer",
     })
 
-    console.log(`${chain?.blockExplorers?.default.url}/tx/${txHash}`)
     return txHash
   }
 
@@ -185,112 +185,135 @@ const TransferBox = () => {
   }
 
   return (
-    <Stack borderRadius={16} borderWidth={1} p={4} w={420}>
-      <Flex justifyContent="space-between">
-        <Flex alignItems="center" gap={2}>
-          <Text fontWeight="bold">Transfer</Text>
-          <ChainSelectPopover
-            buttonProps={{
-              colorPalette: "gray",
-              opacity: 1,
-              variant: "outline",
-            }}
-            onChange={(chain) => {
-              setFromChain(chain)
-              if (fromChain?.id !== chain?.id) {
-                setToken(null)
-              }
-            }}
-            shouldSync={!usingIntent.checked}
-            value={usingIntent.checked ? fromChain : chain}
-          />
+    <Stack gap={6}>
+      <Stack borderRadius={16} borderWidth={1} p={4} w={420}>
+        <Flex justifyContent="space-between">
+          <Flex alignItems="center" gap={2}>
+            <Text fontWeight="bold">Transfer</Text>
+            <ChainSelectPopover
+              buttonProps={{
+                colorPalette: "gray",
+                opacity: 1,
+                variant: "outline",
+              }}
+              onChange={(chain) => {
+                setFromChain(chain)
+                if (fromChain?.id !== chain?.id) {
+                  setToken(null)
+                }
+              }}
+              shouldSync={!usingIntent.checked}
+              value={usingIntent.checked ? fromChain : chain}
+            />
+          </Flex>
+
+          <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">
+            <MdClearAll />
+          </Button>
         </Flex>
 
-        <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">
-          <MdClearAll />
-        </Button>
-      </Flex>
+        <Stack gap={4} position="relative">
+          <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
+            <Flex justifyContent="space-between">
+              <Text fontSize="sm" fontWeight="semibold">
+                Amount
+              </Text>
+              <BalanceDisplay chain={chain} onMax={(balance) => setInputAmount(balance)} token={token} />
+            </Flex>
+            <Flex gap={2} justifyContent="space-between">
+              <NumericInput
+                border="none"
+                fontSize="2xl"
+                fontWeight="semibold"
+                h={8}
+                onChange={(event) => setInputAmount(event.target.value)}
+                p={0}
+                placeholder="0.0"
+                value={inputAmount}
+              />
 
-      <Stack gap={4} position="relative">
-        <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
-          <Flex justifyContent="space-between">
-            <Text fontSize="sm" fontWeight="semibold">
-              Amount
-            </Text>
-            <BalanceDisplay chain={chain} onMax={(balance) => setInputAmount(balance)} token={token} />
-          </Flex>
-          <Flex gap={2} justifyContent="space-between">
-            <NumericInput
-              border="none"
-              fontSize="2xl"
-              fontWeight="semibold"
-              h={8}
-              onChange={(event) => setInputAmount(event.target.value)}
-              p={0}
-              placeholder="0.0"
-              value={inputAmount}
-            />
+              <TokenSelectDialog
+                buttonProps={{ colorPalette: "purple", variant: "surface" }}
+                fromChain={fromChain}
+                isDevnet={usingIntent.checked}
+                onChange={setToken}
+                value={token}
+              />
+            </Flex>
+          </Stack>
 
-            <TokenSelectDialog
-              buttonProps={{ colorPalette: "purple", variant: "surface" }}
-              fromChain={fromChain}
-              isDevnet={usingIntent.checked}
-              onChange={setToken}
-              value={token}
-            />
+          <Flex justifyContent="center" position="absolute" top="50%" transform="translateY(-50%)" w="full">
+            <Center backgroundColor="bg.panel" borderRadius={6} p={1}>
+              <Button colorPalette="gray" size="xs" variant="subtle">
+                <MdArrowDownward />
+              </Button>
+            </Center>
           </Flex>
+
+          <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
+            <Flex justifyContent="space-between">
+              <Text fontSize="sm" fontWeight="semibold">
+                Receiver
+              </Text>
+            </Flex>
+            <Flex justifyContent="space-between">
+              <Input
+                border="none"
+                fontSize="lg"
+                fontWeight="semibold"
+                h={8}
+                onChange={(event) => setReceiveAddress(event.target.value)}
+                p={0}
+                placeholder="0x..."
+                value={receiveAddress}
+              />
+            </Flex>
+          </Stack>
         </Stack>
 
-        <Flex justifyContent="center" position="absolute" top="50%" transform="translateY(-50%)" w="full">
-          <Center backgroundColor="bg.panel" borderRadius={6} p={1}>
-            <Button colorPalette="gray" size="xs" variant="subtle">
-              <MdArrowDownward />
-            </Button>
-          </Center>
-        </Flex>
+        <Stack gap={4}>
+          <Flex>
+            <Checkbox.RootProvider colorPalette="purple" cursor="pointer" value={usingIntent} variant="outline">
+              <Checkbox.HiddenInput />
+              <Checkbox.Control />
+              <Checkbox.Label>Using Intent</Checkbox.Label>
+            </Checkbox.RootProvider>
+          </Flex>
 
-        <Stack backgroundColor="bg.muted" borderRadius={16} gap={4} p={4}>
-          <Flex justifyContent="space-between">
-            <Text fontSize="sm" fontWeight="semibold">
-              Receiver
-            </Text>
-          </Flex>
-          <Flex justifyContent="space-between">
-            <Input
-              border="none"
-              fontSize="lg"
-              fontWeight="semibold"
-              h={8}
-              onChange={(event) => setReceiveAddress(event.target.value)}
-              p={0}
-              placeholder="0x..."
-              value={receiveAddress}
-            />
-          </Flex>
+          <Button
+            borderRadius={16}
+            colorPalette="purple"
+            disabled={!isConnected}
+            loading={transferMutation.isPending}
+            onClick={() => transferMutation.mutateAsync()}
+            size="xl"
+            variant="subtle"
+          >
+            Transfer
+          </Button>
         </Stack>
       </Stack>
 
-      <Stack gap={4}>
-        <Flex>
-          <Checkbox.RootProvider colorPalette="purple" cursor="pointer" value={usingIntent} variant="outline">
-            <Checkbox.HiddenInput />
-            <Checkbox.Control />
-            <Checkbox.Label>Using Intent</Checkbox.Label>
-          </Checkbox.RootProvider>
-        </Flex>
+      {transferMutation.isSuccess && (
+        <Stack borderRadius={16} borderWidth={1} fontSize="sm" p={4} w={420}>
+          <Text color="primary.main" fontWeight="semibold">
+            Transaction Receipt:
+          </Text>
 
-        <Button
-          borderRadius={16}
-          colorPalette="purple"
-          disabled={!isConnected}
-          loading={transferMutation.isPending}
-          onClick={() => transferMutation.mutateAsync()}
-          size="xl"
-          variant="subtle"
-        >
-          Transfer
-        </Button>
-      </Stack>
+          <SimpleGrid gap={2} templateColumns="80px 1fr">
+            <Text>Tx Hash: </Text>
+            <Link
+              fontFamily="mono"
+              href={`${(usingIntent.checked ? fromChain : chain)?.blockExplorers?.default.url}/tx/${transferMutation.data}`}
+              target="_blank"
+              w="fit-content"
+            >
+              {shortenAddress(transferMutation.data)}
+              <RxOpenInNewWindow />
+            </Link>
+          </SimpleGrid>
+        </Stack>
+      )}
     </Stack>
   )
 }
