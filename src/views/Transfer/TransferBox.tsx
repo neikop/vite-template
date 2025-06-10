@@ -197,7 +197,7 @@ const TransferBox = () => {
 
   return (
     <Stack gap={6}>
-      <Stack borderRadius={16} borderWidth={1} p={4} w={420}>
+      <Stack borderRadius={16} borderWidth={1} maxW={420} p={4}>
         <Flex justifyContent="space-between">
           <Flex alignItems="center" gap={2}>
             <Text fontWeight="bold">Transfer</Text>

@@ -1,5 +1,6 @@
-import { Center, Flex, Text } from "@chakra-ui/react"
-import { JSX, ReactNode } from "react"
+import { Button, Center, Drawer, Flex, Stack, Text } from "@chakra-ui/react"
+import { JSX, ReactNode, useState } from "react"
+import { MdMenu } from "react-icons/md"
 import { RxOpenInNewWindow } from "react-icons/rx"
 import { Link, LinkProps, useLocation } from "react-router"
 import { privateRoute } from "routes"
@@ -23,7 +24,7 @@ const MenuItem = ({ linkProps, name, path }: MenuItemProps) => {
       <Center
         _hover={{ backgroundColor: isSelected ? "bg.primary" : "bg.muted" }}
         borderTopColor={isSelected ? "primary.main" : "transparent"}
-        borderTopWidth={3}
+        borderTopWidth={{ base: "none", md: 3 }}
         h="full"
         pb={3}
         pt={2}
@@ -37,9 +38,9 @@ const MenuItem = ({ linkProps, name, path }: MenuItemProps) => {
   )
 }
 
-const AppSidebar = () => {
+const MenuItems = () => {
   return (
-    <Flex alignItems="stretch" h="full">
+    <>
       <MenuItem {...privateRoute.transfer} />
       <MenuItem {...privateRoute.bridge} />
       <MenuItem
@@ -51,7 +52,38 @@ const AppSidebar = () => {
         }
         path="https://one-matrix-uni-v2-interface.pages.dev"
       />
-    </Flex>
+    </>
+  )
+}
+
+const AppSidebar = () => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Flex alignItems="stretch" display={{ base: "none", md: "flex" }} h="full">
+        <MenuItems />
+      </Flex>
+
+      <Drawer.Root onOpenChange={(event) => setOpen(event.open)} open={open} placement="top">
+        <Drawer.Backdrop />
+        <Drawer.Trigger>
+          <Button display={{ base: "none", mdDown: "block" }}>
+            <MdMenu />
+          </Button>
+        </Drawer.Trigger>
+        <Drawer.Positioner>
+          <Drawer.Content>
+            <Drawer.CloseTrigger />
+            <Drawer.Body>
+              <Stack onClick={() => setOpen(false)}>
+                <MenuItems />
+              </Stack>
+            </Drawer.Body>
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Drawer.Root>
+    </>
   )
 }
 

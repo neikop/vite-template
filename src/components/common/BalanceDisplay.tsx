@@ -37,7 +37,7 @@ const BalanceDisplay = ({ chain, onMax, token }: Props) => {
   const formattedBalance = formatEther(balance || 0n)
 
   return (
-    <Flex gap={2} maxW={240}>
+    <Flex flex={1} gap={2} maxW={{ base: 180, sm: 240 }}>
       <Text fontSize="sm" truncate={true}>
         Balance: {formattedBalance}
       </Text>
