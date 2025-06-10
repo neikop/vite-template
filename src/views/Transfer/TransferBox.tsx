@@ -3,6 +3,7 @@ import { AbiCoder as AbiCoderV6 } from "@ethersproject/abi-v6"
 import { useMutation } from "@tanstack/react-query"
 import { BalanceDisplay, ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
+import { queryClient } from "config/queryClient"
 import { ERC20Abi, ISCAbi } from "contracts/abis"
 import { useState } from "react"
 import { MdArrowDownward, MdClearAll } from "react-icons/md"
@@ -174,6 +175,7 @@ const TransferBox = () => {
         title: "Success",
         type: "success",
       })
+      queryClient.invalidateQueries({ queryKey: ["fetchBalance"] })
     },
   })
 

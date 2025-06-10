@@ -2,6 +2,7 @@ import { Button, Center, Flex, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { BalanceDisplay, ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
+import { queryClient } from "config/queryClient"
 import { ERC20Abi, OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
 import { useState } from "react"
@@ -152,6 +153,7 @@ const BridgeBox = () => {
         title: "Success",
         type: "success",
       })
+      queryClient.invalidateQueries({ queryKey: ["fetchBalance"] })
     },
   })
 
