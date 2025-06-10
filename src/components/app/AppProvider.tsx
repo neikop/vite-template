@@ -15,7 +15,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <ChakraProvider value={chakraSystem}>
-            <ThemeProvider attribute="class" disableTransitionOnChange>
+            <ThemeProvider attribute="class" disableTransitionOnChange enableSystem={false} forcedTheme="light">
               {children}
               <Toaster />
             </ThemeProvider>
