@@ -2,7 +2,7 @@ import { Button, Center, Flex, Stack, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { ChainSelectPopover, NumericInput, TokenSelectDialog } from "components/common"
 import { toaster } from "components/ui/toaster"
-import { OFTAbi } from "contracts/abis"
+import { ERC20Abi, OFTAbi } from "contracts/abis"
 import * as ethers from "ethers"
 import { useState } from "react"
 import { MdClearAll, MdSwapVert } from "react-icons/md"
@@ -21,12 +21,63 @@ const BridgeBox = () => {
   const [inputAmount, setInputAmount] = useState("")
   const [outputAmount] = [inputAmount]
 
+  const checkAllowance = async () => {
+    if (!walletClient || !token || !inputChain) return
+
+    const inputTokenAddress = token.bridges?.[inputChain.id] as Address
+    const amount = parseEther(inputAmount)
+
+    const publicClient = createPublicClient({
+      chain: inputChain,
+      transport: http(),
+    })
+
+    if (token.tokenAddress) {
+      const allowance = (await publicClient.readContract({
+        abi: ERC20Abi,
+        address: token.tokenAddress,
+        args: [address, inputTokenAddress],
+        functionName: "allowance",
+      })) as bigint
+
+      if (allowance < amount) {
+        await walletClient.writeContract({
+          abi: ERC20Abi,
+          account: address,
+          address: token.tokenAddress,
+          args: [inputTokenAddress, amount],
+          functionName: "approve",
+        })
+
+        const allowanceAfter = (await publicClient.readContract({
+          abi: ERC20Abi,
+          address: token.tokenAddress,
+          args: [address, inputTokenAddress],
+          functionName: "allowance",
+        })) as bigint
+
+        if (allowanceAfter < amount) {
+          return checkAllowance()
+        }
+      }
+    }
+  }
+
   const handleBridge = async () => {
     if (!address || !walletClient) return
     if (!inputAmount || !token || !inputChain || !outputChain) return
 
     const inputTokenAddress = token.bridges?.[inputChain.id] as Address
     const outputTokenAddress = token.bridges?.[outputChain.id] as Address
+
+    const publicClient = createPublicClient({
+      chain: inputChain,
+      transport: http(),
+    })
+
+    if (token.tokenAddress) {
+      await checkAllowance()
+    }
 
     const amount = parseEther(inputAmount)
     const toAddress = address
@@ -43,11 +94,6 @@ const BridgeBox = () => {
       "0x",
       "0x",
     ]
-
-    const publicClient = createPublicClient({
-      chain: inputChain,
-      transport: http(),
-    })
 
     const quoteSend = await publicClient.readContract({
       abi: OFTAbi,

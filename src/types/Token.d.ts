@@ -12,4 +12,5 @@ type Token = {
   logoURI: string
   name: string
   symbol: string
+  tokenAddress?: Address
 }

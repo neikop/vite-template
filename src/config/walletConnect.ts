@@ -17,7 +17,7 @@ export const onematrix: Chain = defineChain({
   nativeCurrency: { decimals: 18, name: "MTX", symbol: "MTX" },
   rpcUrls: {
     default: {
-      http: ["https://devnet-el-1.vinid.info"],
+      http: ["https://devnet2-el-1.vinid.info"],
     },
   },
   testnet: true,
