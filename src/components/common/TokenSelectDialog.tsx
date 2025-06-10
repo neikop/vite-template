@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonProps,
   Center,
   CloseButton,
   Dialog,
@@ -14,20 +15,27 @@ import {
   Text,
   useDialog,
 } from "@chakra-ui/react"
+import { Chain } from "@rainbow-me/rainbowkit"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
-import { kyberService } from "services"
+import { devnetService, kyberService } from "services"
+import { useAccount } from "wagmi"
 
 type Props = {
+  buttonProps?: ButtonProps
+  feature?: Feature
+  fromChain?: Chain | null
+  isDevnet?: boolean
   onChange?: (chain: null | Token) => void
   value?: null | Token
 }
 
-const TokenSelectDialog = ({ onChange, value }: Props) => {
+const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange, value }: Props) => {
   const dialog = useDialog()
+  const { chainId } = useAccount()
 
   const [searchText, setSearchText] = useState("")
   const [currentToken, setCurrentToken] = useState<null | Token>(null)
@@ -44,14 +52,23 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
       return nextPage
     },
     initialPageParam: 1,
-    queryFn: ({ pageParam: page }) => kyberService.fetchTokens({ page, pageSize: 20, query: debouncedSearchText }),
-    queryKey: ["kyberService.fetchTokens", { query: debouncedSearchText }],
+    queryFn: ({ pageParam: page }) => {
+      const service = isDevnet ? devnetService : kyberService
+      return service.fetchTokens({
+        chainId: isDevnet ? fromChain?.id : chainId,
+        feature,
+        page,
+        pageSize: 20,
+        query: debouncedSearchText,
+      })
+    },
+    queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
   })
 
   return (
     <Dialog.RootProvider placement="top" scrollBehavior="inside" size="sm" value={dialog}>
       <Dialog.Trigger asChild>
-        <Button px={selectedToken ? 1 : undefined} rounded="full" size="xs" variant="outline">
+        <Button px={selectedToken ? 1 : undefined} rounded="full" size="xs" variant="outline" {...buttonProps}>
           {selectedToken ? (
             <>
               <Image h={6} rounded="full" src={selectedToken.logoURI} w={6} />
@@ -78,7 +95,7 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                 }}
                 useWindow={false}
               >
-                <Box backgroundColor="white" pb={2} position="sticky" top={0} zIndex={1}>
+                <Box backgroundColor="bg.panel" pb={2} position="sticky" top={0} zIndex={1}>
                   <Input
                     colorPalette="purple"
                     onChange={(event) => setSearchText(event.target.value)}
@@ -95,11 +112,11 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                       const isSelected = token.address === selectedToken?.address
                       return (
                         <Button
-                          borderColor="transparent"
                           borderRadius={8}
                           colorPalette={isSelected ? "purple" : "gray"}
                           justifyContent="flex-start"
                           key={`${token.chainId}/${token.address}`}
+                          minH={12}
                           onClick={() => {
                             setCurrentToken(token)
                             onChange?.(token)
@@ -107,23 +124,16 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                           }}
                           overflow="hidden"
                           px={2}
-                          size="lg"
-                          variant={isSelected ? "surface" : "outline"}
+                          variant={isSelected ? "subtle" : "ghost"}
                         >
                           <Image h={6} rounded="full" src={token.logoURI} w={6} />
                           <Box flex={1} overflow="hidden" textAlign="left">
-                            <Text lineHeight="20px">{token.symbol}</Text>
+                            <Text>{token.symbol}</Text>
                             <Flex flex={1} gap={4} justifyContent="space-between">
-                              <Text
-                                color="blackAlpha.800"
-                                fontSize="xs"
-                                fontWeight="normal"
-                                lineHeight="20px"
-                                truncate={true}
-                              >
+                              <Text color="textSecondary" fontSize="xs" fontWeight="normal" truncate={true}>
                                 {token.name}
                               </Text>
-                              <Text color="blackAlpha.800" fontSize="xs" fontWeight="normal" lineHeight="20px">
+                              <Text color="textSecondary" fontSize="xs" fontWeight="normal">
                                 ChainID: {token.chainId}
                               </Text>
                             </Flex>
@@ -133,15 +143,15 @@ const TokenSelectDialog = ({ onChange, value }: Props) => {
                     })}
 
                   {isFetching && (
-                    <Flex alignItems="center" borderColor="transparent" borderWidth={1} gap={2} h={11} px={1}>
+                    <Flex alignItems="center" gap={2} h={12} px={1}>
                       <SkeletonCircle size={8} />
                       <SkeletonText noOfLines={2} />
                     </Flex>
                   )}
 
                   {data?.pages[0]?.pagination.totalItems === 0 && (
-                    <Center h={11}>
-                      <Text color="blackAlpha.600">No results found.</Text>
+                    <Center h={12}>
+                      <Text color="textSecondary">No results found.</Text>
                     </Center>
                   )}
                 </Stack>

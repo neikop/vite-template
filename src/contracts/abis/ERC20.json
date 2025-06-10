@@ -28,6 +28,19 @@
 		"outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
 		"stateMutability": "view"
 	},
+  {
+		"type": "function",
+    "name": "decimals",
+    "inputs": [],
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view"
+  },
 	{
 		"type": "function",
 		"name": "totalSupply",

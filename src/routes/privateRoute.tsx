@@ -1,5 +1,6 @@
 import { Bridge } from "views/Bridge"
-import { Home } from "views/Home"
+import { Guide } from "views/Component"
+import { Transfer } from "views/Transfer"
 
 const privateRoute = {
   bridge: {
@@ -7,10 +8,20 @@ const privateRoute = {
     name: "Bridge",
     path: "/bridge",
   },
+  guide: {
+    component: Guide,
+    name: "Component",
+    path: "/component",
+  },
   home: {
-    component: Home,
-    name: "Home",
-    path: "/",
+    component: Bridge,
+    name: "Bridge",
+    path: "/bridge",
+  },
+  transfer: {
+    component: Transfer,
+    name: "Transfer",
+    path: "/transfer",
   },
 }
 

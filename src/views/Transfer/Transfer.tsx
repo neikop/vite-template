@@ -1,15 +1,15 @@
 import { Container, Stack } from "@chakra-ui/react"
 
-import { BridgeBox } from "."
+import { TransferBox } from "."
 
-const Bridge = () => {
+const Transfer = () => {
   return (
     <Container>
       <Stack alignItems="center" py={16}>
-        <BridgeBox />
+        <TransferBox />
       </Stack>
     </Container>
   )
 }
 
-export default Bridge
+export default Transfer

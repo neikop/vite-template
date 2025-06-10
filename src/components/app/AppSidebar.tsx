@@ -1,7 +1,5 @@
-import { Box, Button, Center, Flex, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Center, Flex, Text } from "@chakra-ui/react"
 import { JSX } from "react"
-import { LuHotel, LuHouse } from "react-icons/lu"
-import { MdOutlineRunCircle, MdOutlineViewAgenda, MdRunCircle, MdViewAgenda } from "react-icons/md"
 import { Link, useLocation } from "react-router"
 import { privateRoute } from "routes"
 
@@ -21,15 +19,15 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
   return (
     <Link to={path}>
       <Center
-        _hover={{ bg: isSelected ? "purple.50" : "gray.100" }}
-        borderTopColor={isSelected ? "purple.500" : "transparent"}
+        _hover={{ backgroundColor: isSelected ? "bg.primary" : "bg.muted" }}
+        borderTopColor={isSelected ? "primary.main" : "transparent"}
         borderTopWidth={3}
         h="full"
         pb={3}
         pt={2}
         px={6}
       >
-        <Text color={isSelected ? "teal.600" : "black"} fontWeight="bold">
+        <Text color={isSelected ? "primary.dark" : "black"} fontWeight="bold">
           {name}
         </Text>
       </Center>
@@ -40,7 +38,7 @@ const MenuItem = ({ name, path }: MenuItemProps) => {
 const AppSidebar = () => {
   return (
     <Flex alignItems="stretch" h="full">
-      <MenuItem {...privateRoute.home} />
+      <MenuItem {...privateRoute.transfer} />
       <MenuItem {...privateRoute.bridge} />
     </Flex>
   )

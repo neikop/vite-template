@@ -1,3 +1,5 @@
+type Feature = "bridge" | "transfer"
+
 type TokensPagination = {
   pagination: {
     totalItems: number
@@ -6,6 +8,8 @@ type TokensPagination = {
 }
 
 type TokensParams = {
+  chainId?: number | string
+  feature?: Feature
   page?: number
   pageSize?: number
   query?: string
