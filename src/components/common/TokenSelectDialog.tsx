@@ -26,7 +26,7 @@ import { useAccount } from "wagmi"
 
 type Props = {
   buttonProps?: ButtonProps
-  feature?: "bridge" | "transfer"
+  feature?: Feature
   fromChain?: Chain | null
   isDevnet?: boolean
   onChange?: (chain: null | Token) => void
