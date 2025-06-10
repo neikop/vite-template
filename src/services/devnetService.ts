@@ -21,17 +21,16 @@ const fetchTokens = (params?: TokensParams): Promise<TokensPagination> => {
       symbol: "USDC",
     },
     {
-      address: "0xC78d96e897C17D7113E3dDa20B693eb799Ebee23",
+      address: "0x25052ec0e31e8a4b3945a0700f56c5b74988b496",
       bridges: {
         421_614: "0xC78d96e897C17D7113E3dDa20B693eb799Ebee23",
         84004: "0xb313472eDe54230E2397f5d1D0Dd9FAa5D28828D",
       },
       chainId: 421_614,
       decimals: 18,
-      logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
-      name: "aOFT",
-      symbol: "aOFT",
-      tokenAddress: "0x25052ec0e31e8a4b3945a0700f56c5b74988b496",
+      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      name: "USDT",
+      symbol: "USDT",
     },
     {
       address: "0xb313472eDe54230E2397f5d1D0Dd9FAa5D28828D",

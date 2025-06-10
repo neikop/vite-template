@@ -24,7 +24,7 @@ const BridgeBox = () => {
   const checkAllowance = async () => {
     if (!walletClient || !token || !inputChain) return
 
-    const inputTokenAddress = token.bridges?.[inputChain.id] as Address
+    const inputOFTAddress = token.bridges?.[inputChain.id] as Address
     const amount = parseEther(inputAmount)
 
     const publicClient = createPublicClient({
@@ -32,11 +32,11 @@ const BridgeBox = () => {
       transport: http(),
     })
 
-    if (token.tokenAddress) {
+    if (token.address !== inputOFTAddress) {
       const allowance = (await publicClient.readContract({
         abi: ERC20Abi,
-        address: token.tokenAddress,
-        args: [address, inputTokenAddress],
+        address: token.address,
+        args: [address, inputOFTAddress],
         functionName: "allowance",
       })) as bigint
 
@@ -44,15 +44,15 @@ const BridgeBox = () => {
         await walletClient.writeContract({
           abi: ERC20Abi,
           account: address,
-          address: token.tokenAddress,
-          args: [inputTokenAddress, amount],
+          address: token.address,
+          args: [inputOFTAddress, amount],
           functionName: "approve",
         })
 
         const allowanceAfter = (await publicClient.readContract({
           abi: ERC20Abi,
-          address: token.tokenAddress,
-          args: [address, inputTokenAddress],
+          address: token.address,
+          args: [address, inputOFTAddress],
           functionName: "allowance",
         })) as bigint
 
@@ -67,17 +67,15 @@ const BridgeBox = () => {
     if (!address || !walletClient) return
     if (!inputAmount || !token || !inputChain || !outputChain) return
 
-    const inputTokenAddress = token.bridges?.[inputChain.id] as Address
-    const outputTokenAddress = token.bridges?.[outputChain.id] as Address
+    const inputOFTAddress = token.bridges?.[inputChain.id] as Address
+    const outputOFTAddress = token.bridges?.[outputChain.id] as Address
 
     const publicClient = createPublicClient({
       chain: inputChain,
       transport: http(),
     })
 
-    if (token.tokenAddress) {
-      await checkAllowance()
-    }
+    await checkAllowance()
 
     const amount = parseEther(inputAmount)
     const toAddress = address
@@ -97,7 +95,7 @@ const BridgeBox = () => {
 
     const quoteSend = await publicClient.readContract({
       abi: OFTAbi,
-      address: inputTokenAddress,
+      address: inputOFTAddress,
       args: [sendParam, false],
       functionName: "quoteSend",
     })
@@ -107,7 +105,7 @@ const BridgeBox = () => {
     const txHash = await walletClient.writeContract({
       abi: OFTAbi,
       account: address,
-      address: inputTokenAddress,
+      address: inputOFTAddress,
       args: [sendParam, fee, address],
       functionName: "send",
       value: fee.nativeFee,
@@ -128,7 +126,7 @@ const BridgeBox = () => {
 
     const unwatch = outputClient.watchContractEvent({
       abi: OFTAbi,
-      address: outputTokenAddress,
+      address: outputOFTAddress,
       eventName: "OFTReceived",
       onLogs: (logs) => {
         const log = logs[0]
@@ -200,7 +198,15 @@ const BridgeBox = () => {
               value={inputAmount}
             />
 
-            <ChainSelectPopover onChange={setInputChain} shouldSync testnet={true} value={inputChain} />
+            <ChainSelectPopover
+              onChange={(chain) => {
+                setInputChain(chain)
+                setToken(null)
+              }}
+              shouldSync
+              testnet={true}
+              value={inputChain}
+            />
           </Flex>
         </Stack>
 
@@ -213,6 +219,7 @@ const BridgeBox = () => {
                 if (inputChain) {
                   switchChain({ chainId: inputChain.id })
                 }
+                setToken(null)
               }}
               size="xs"
               variant="subtle"
