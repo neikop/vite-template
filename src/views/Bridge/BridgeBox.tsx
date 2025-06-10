@@ -162,7 +162,7 @@ const BridgeBox = () => {
     mutationFn: handleBridge,
     onError: (error) => {
       toaster.create({
-        description: error.message.split("\n")[0] || "There was an error sending your transaction",
+        description: error.message || "There was an error sending your transaction",
         title: error.name || "Failed",
         type: "error",
       })
