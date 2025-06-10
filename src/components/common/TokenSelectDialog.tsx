@@ -20,10 +20,10 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
 import { ERC20Abi } from "contracts/abis"
-import { uniqBy } from "lodash"
 import { useEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { devnetService, kyberService } from "services"
+import { useTokensStore } from "store/tokensStore"
 import { createPublicClient, http, isAddress } from "viem"
 import { useAccount } from "wagmi"
 
@@ -68,16 +68,16 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
     queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
   })
 
-  const [fetchedTokens, setFetchedTokens] = useState<Token[]>([])
+  const { addToken, tokens: importedTokens } = useTokensStore()
   const [loadingTokens, setLoadingTokens] = useState(false)
 
   const availableTokens = useMemo(() => {
-    let allTokens = (data?.pages.flatMap((page) => page.tokens) ?? []).concat(fetchedTokens)
+    let allTokens = (data?.pages.flatMap((page) => page.tokens) ?? []).concat(importedTokens)
     if (isAddress(debouncedSearchText)) {
       allTokens = allTokens.filter((token) => token.address === debouncedSearchText)
     }
     return allTokens
-  }, [data, fetchedTokens, debouncedSearchText])
+  }, [data, importedTokens, debouncedSearchText])
 
   useEffect(() => {
     const getTokenInfo = async (chain: Chain, tokenAddress: Address) => {
@@ -94,24 +94,20 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
         setLoadingTokens(false)
       })
 
-      const newToken = {
+      addToken({
         address: tokenAddress,
         chainId: chain.id,
         decimals,
         logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
         name: symbol,
         symbol,
-      } as Token
-
-      setFetchedTokens((tokens) => {
-        return uniqBy(tokens.concat(newToken), "address")
-      })
+      } as Token)
     }
 
     if (fromChain && isAddress(debouncedSearchText)) {
       getTokenInfo(fromChain, debouncedSearchText)
     }
-  }, [fromChain, debouncedSearchText])
+  }, [fromChain, debouncedSearchText, addToken])
 
   return (
     <Dialog.RootProvider placement="top" scrollBehavior="inside" size="sm" value={dialog}>
