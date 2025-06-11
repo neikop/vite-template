@@ -8,7 +8,8 @@ type TokensPagination = {
 }
 
 type TokensParams = {
-  chainId?: number | string
+  walletClient?: any
+  chainId: number | string
   feature?: Feature
   page?: number
   pageSize?: number

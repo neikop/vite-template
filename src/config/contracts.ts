@@ -1,0 +1,11 @@
+import { Address } from "viem"
+
+export const MULTICALL_ADDRESSES: Record<number, Address> = {
+  [84004]: "0xa73A817D504D365c3562E36D05bA7FBE5bdC8Cb1",
+  [421614]: "0x32d8Bd37264f7568187Df0Cc19381f809682827A",
+}
+
+export const OFT_FACTORY: Record<number, Address> = {
+  [84004]: "0xeD9DfAcE22F7fe606F008536d7058b0D426BB90C",
+  [421614]: "0x7E149C4Ef8255661813d68AD2bdF3C521bB0DAe7",
+}

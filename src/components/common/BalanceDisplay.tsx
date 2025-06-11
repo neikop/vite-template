@@ -22,7 +22,7 @@ const BalanceDisplay = ({ chain, onMax, token }: Props) => {
     })
     const balance = await publicClient.readContract({
       abi: ERC20Abi,
-      address: token.address,
+      address: token.chainId === 421614 ? token.address : token.bridges![token.chainId],
       args: [address],
       functionName: "balanceOf",
     })

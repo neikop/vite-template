@@ -35,7 +35,8 @@ const BridgeBox = () => {
       transport: http(),
     })
 
-    if (token.address !== inputOFTAddress) {
+    // @todo check
+    if (token.chainId === 421614) {
       const allowance = (await publicClient.readContract({
         abi: ERC20Abi,
         address: token.address,
