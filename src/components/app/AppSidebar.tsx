@@ -68,7 +68,7 @@ const AppSidebar = () => {
 
       <Drawer.Root onOpenChange={(event) => setOpen(event.open)} open={open} placement="top">
         <Drawer.Backdrop />
-        <Drawer.Trigger>
+        <Drawer.Trigger asChild>
           <Button display={{ base: "none", mdDown: "block" }}>
             <MdMenu />
           </Button>
