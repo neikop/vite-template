@@ -1,3 +1,10 @@
+import { MULTICALL_ADDRESSES, OFT_FACTORY } from "config/contracts"
+import { getPublicClient } from "config/walletConnect"
+import { OFTAdapterFactoryAbi } from "contracts/abis"
+import { getAddress } from "viem"
+
+import { getTokenMetadata } from "./oft"
+
 const filterData = (items: Token[], params?: TokensParams) => {
   let filteredItems = items
   if (params?.chainId) {
@@ -9,7 +16,7 @@ const filterData = (items: Token[], params?: TokensParams) => {
   return filteredItems
 }
 
-const fetchTokens = (params?: TokensParams): Promise<TokensPagination> => {
+const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => {
   const data: Token[] = [
     {
       address: "0x974BEdB866852dbB57dC7B025af528e51968DF1C",
@@ -51,7 +58,93 @@ const fetchTokens = (params?: TokensParams): Promise<TokensPagination> => {
 
   const { page = 1, pageSize = 10 } = params ?? {}
 
-  const filteredTokens = filterData(data, params)
+  let _data = [...data]
+
+  if (typeof params?.query === "string" && params.chainId) {
+    _data = _data.filter(
+      (i) => i.address.toLowerCase().includes(params.query!.toLowerCase()) && params.chainId === i.chainId,
+    )
+
+    if (!_data.length && getAddress(params.query!)) {
+      const publicClient = getPublicClient(+params.chainId)
+      const token = getAddress(params.query!)
+
+      if (publicClient && MULTICALL_ADDRESSES[+params.chainId]) {
+        const tokenMetadata = await getTokenMetadata(token, 421614) // @todo check
+
+        if (tokenMetadata.name && tokenMetadata.symbol) {
+          const bridges: any = {}
+
+          const oftFactory = OFT_FACTORY[+params.chainId]
+
+          if (oftFactory) {
+            if (params.chainId == 421614) {
+              const oftResults = await publicClient.multicall({
+                contracts: [
+                  {
+                    abi: OFTAdapterFactoryAbi,
+                    address: getAddress(oftFactory),
+                    args: [token],
+                    functionName: "adapters",
+                  },
+                  {
+                    abi: OFTAdapterFactoryAbi,
+                    address: getAddress(oftFactory),
+                    args: [token, 84004],
+                    functionName: "destOFTs",
+                  },
+                  // @todo add other chain
+                ],
+                multicallAddress: MULTICALL_ADDRESSES[+params.chainId]!,
+              })
+
+              bridges[params.chainId] = oftResults[0].result
+              bridges[84004] = oftResults[1].result
+            } else if (params.chainId == 84004) {
+              const oftResults = await publicClient.multicall({
+                contracts: [
+                  {
+                    abi: OFTAdapterFactoryAbi,
+                    address: getAddress(oftFactory),
+                    args: [token],
+                    functionName: "adapters",
+                  },
+                  {
+                    abi: OFTAdapterFactoryAbi,
+                    address: getAddress(oftFactory),
+                    args: [token, 421614],
+                    functionName: "destOFTs",
+                  },
+                  // @todo add other chain
+                ],
+                multicallAddress: MULTICALL_ADDRESSES[+params.chainId]!,
+              })
+
+              bridges[params.chainId] = oftResults[0].result
+              bridges[421614] = oftResults[1].result
+            }
+          }
+
+          _data = [
+            // @todo fetch token or create adapter
+            // 0xd9f96278A0d722ED5b0977aA2f3f60cc5E885833
+
+            {
+              address: getAddress(params.query!),
+              bridges: bridges,
+              chainId: +params.chainId,
+              decimals: 18,
+              logoURI: "todo",
+              name: tokenMetadata.name,
+              symbol: tokenMetadata.symbol,
+            },
+          ]
+        }
+      }
+    }
+  }
+
+  const filteredTokens = filterData(_data, params)
 
   return Promise.resolve({
     pagination: {

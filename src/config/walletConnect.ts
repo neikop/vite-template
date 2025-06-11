@@ -1,6 +1,6 @@
 import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit"
 import { WALLET_CONNECT_PROJECT_ID } from "config/env"
-import { defineChain } from "viem"
+import { createPublicClient, defineChain, http } from "viem"
 import { arbitrum, arbitrumSepolia, berachain, mainnet } from "wagmi/chains"
 
 Object.assign(arbitrum, { iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/11841.png" })
@@ -45,3 +45,19 @@ export const wagmiConfig = getDefaultConfig({
   projectId: WALLET_CONNECT_PROJECT_ID,
   ssr: false,
 })
+
+export const getPublicClient = (chainId: number) => {
+  switch (chainId) {
+    case 84004:
+      return createPublicClient({
+        chain: onematrix,
+        transport: http(),
+      })
+
+    default:
+      return createPublicClient({
+        chain: arbitrumSepolia,
+        transport: http(),
+      })
+  }
+}

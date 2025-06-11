@@ -11,6 +11,7 @@ import {
   Portal,
   SkeletonCircle,
   SkeletonText,
+  Spinner,
   Stack,
   Text,
   useDialog,
@@ -24,9 +25,10 @@ import { uniqBy } from "lodash"
 import { useEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { devnetService, kyberService } from "services"
+import { createOFTAdapter } from "services/oft"
 import { useTokensStore } from "store/tokensStore"
-import { createPublicClient, http, isAddress } from "viem"
-import { useAccount } from "wagmi"
+import { createPublicClient, http, isAddress, zeroAddress } from "viem"
+import { useAccount, useWalletClient } from "wagmi"
 
 type Props = {
   buttonProps?: ButtonProps
@@ -40,9 +42,11 @@ type Props = {
 const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange, value }: Props) => {
   const dialog = useDialog()
   const { chainId } = useAccount()
+  const { data: walletClient } = useWalletClient()
 
   const [searchText, setSearchText] = useState("")
   const [currentToken, setCurrentToken] = useState<null | Token>(null)
+  const [creatingAdapter, setCreatingAdapter] = useState<boolean>(false)
 
   const debouncedSearchText = useDebounce(searchText, 300)
 
@@ -64,6 +68,7 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
         page,
         pageSize: 20,
         query: debouncedSearchText,
+        walletClient,
       })
     },
     queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
@@ -167,11 +172,27 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
                         justifyContent="flex-start"
                         key={`${token.chainId}/${token.address}`}
                         minH={12}
-                        onClick={() => {
-                          setCurrentToken(token)
-                          onChange?.(token)
-                          dialog.setOpen(false)
-                          if (token.isImport) addToken(token)
+                        onClick={async () => {
+                          try {
+                            let _token = { ...token }
+                            const noBridge = Object.values(token?.bridges ?? {}).some((i) => i === zeroAddress)
+                            if (noBridge) {
+                              setCreatingAdapter(true)
+                              const bridges = await createOFTAdapter(
+                                (isDevnet ? fromChain?.id : chainId) as number,
+                                token.address,
+                                walletClient,
+                              )
+                              _token = { ...token, bridges }
+                            }
+                            setCurrentToken(_token)
+                            onChange?.(_token)
+                            if (token.isImport) addToken(_token)
+                            dialog.setOpen(false)
+                            setCreatingAdapter(false)
+                          } catch (error) {
+                            setCreatingAdapter(false)
+                          }
                         }}
                         overflow="hidden"
                         px={2}
@@ -189,6 +210,10 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
                             </Text>
                           </Flex>
                         </Box>
+
+                        {Object.values(token?.bridges ?? {}).some((i) => i === zeroAddress) ? (
+                          <>{creatingAdapter ? <Spinner /> : <Text>Create Adapter</Text>}</>
+                        ) : null}
                       </Button>
                     )
                   })}

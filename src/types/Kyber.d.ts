@@ -13,4 +13,5 @@ type TokensParams = {
   page?: number
   pageSize?: number
   query?: string
+  walletClient?: any
 }
