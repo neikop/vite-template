@@ -207,6 +207,7 @@ const TransferBox = () => {
                 opacity: 1,
                 variant: "outline",
               }}
+              isDevnet={usingIntent.checked}
               onChange={(chain) => {
                 setFromChain(chain)
                 if (fromChain?.id !== chain?.id) {
@@ -306,7 +307,7 @@ const TransferBox = () => {
       </Stack>
 
       {transferMutation.isSuccess && (
-        <Stack borderRadius={16} borderWidth={1} fontSize="sm" p={4} w={420}>
+        <Stack borderRadius={16} borderWidth={1} fontSize="sm" maxW={420} p={4}>
           <Text color="primary.main" fontWeight="semibold">
             Transaction Receipt:
           </Text>

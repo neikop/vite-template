@@ -189,7 +189,13 @@ const BridgeBox = () => {
         <Flex justifyContent="space-between">
           <Flex alignItems="center" gap={2}>
             <Text fontWeight="bold">Bridge</Text>
-            <TokenSelectDialog feature="bridge" fromChain={inputChain} isDevnet onChange={setToken} value={token} />
+            <TokenSelectDialog
+              feature="bridge"
+              fromChain={inputChain}
+              isDevnet={true}
+              onChange={setToken}
+              value={token}
+            />
           </Flex>
 
           <Button h={8} minW={8} onClick={handleClear} p={1} variant="ghost">
@@ -223,7 +229,6 @@ const BridgeBox = () => {
                   setToken(null)
                 }}
                 shouldSync
-                testnet={true}
                 value={inputChain}
               />
             </Flex>
@@ -268,7 +273,7 @@ const BridgeBox = () => {
                 value={outputAmount}
               />
 
-              <ChainSelectPopover onChange={setOutputChain} testnet={true} value={outputChain} />
+              <ChainSelectPopover onChange={setOutputChain} value={outputChain} />
             </Flex>
           </Stack>
         </Stack>
@@ -289,7 +294,7 @@ const BridgeBox = () => {
       </Stack>
 
       {bridgeMutation.isSuccess && (
-        <Stack borderRadius={16} borderWidth={1} fontSize="sm" p={4} w={420}>
+        <Stack borderRadius={16} borderWidth={1} fontSize="sm" maxW={420} p={4}>
           <Text color="primary.main" fontWeight="semibold">
             Transaction Receipt:
           </Text>

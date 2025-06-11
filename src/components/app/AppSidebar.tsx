@@ -30,7 +30,7 @@ const MenuItem = ({ linkProps, name, path }: MenuItemProps) => {
         pt={2}
         px={6}
       >
-        <Text color={isSelected ? "primary.dark" : "black"} fontWeight="bold">
+        <Text as="div" color={isSelected ? "primary.dark" : "black"} fontWeight="bold">
           {name}
         </Text>
       </Center>
@@ -43,10 +43,11 @@ const MenuItems = () => {
     <>
       <MenuItem {...privateRoute.transfer} />
       <MenuItem {...privateRoute.bridge} />
+      <MenuItem {...privateRoute.multiSign} />
       <MenuItem
         linkProps={{ target: "_blank" }}
         name={
-          <Flex as="span" gap={1}>
+          <Flex gap={1}>
             Swap <RxOpenInNewWindow />
           </Flex>
         }

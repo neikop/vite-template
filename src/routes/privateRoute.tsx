@@ -21,8 +21,8 @@ const privateRoute = {
   },
   multiSign: {
     component: MultiSign,
-    name: "Multi Sign",
-    path: "/multi-sign",
+    name: "Vault",
+    path: "/vault",
   },
   transfer: {
     component: Transfer,

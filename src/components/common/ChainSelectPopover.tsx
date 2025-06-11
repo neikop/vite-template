@@ -14,13 +14,13 @@ const bridgeChains: Chain[] = [
 
 type Props = {
   buttonProps?: ButtonProps
+  isDevnet?: boolean
   onChange?: (chain: Chain | null) => void
   shouldSync?: boolean
-  testnet?: boolean
   value?: Chain | null
 }
 
-const ChainSelectPopover = ({ buttonProps, onChange, shouldSync, testnet, value }: Props) => {
+const ChainSelectPopover = ({ buttonProps, isDevnet, onChange, shouldSync, value }: Props) => {
   const { switchChain } = useSwitchChain()
 
   const { onClose, open, setOpen } = useDisclosure()
@@ -28,8 +28,8 @@ const ChainSelectPopover = ({ buttonProps, onChange, shouldSync, testnet, value 
   const [currentChain, setCurrentChain] = useState<Chain | null>(null)
 
   const availableChains = bridgeChains.filter((chain) => {
-    if (testnet !== undefined) {
-      return chain.testnet === testnet
+    if (isDevnet) {
+      return chain.id === onematrix.id
     }
     return true
   })
