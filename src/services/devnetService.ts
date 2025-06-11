@@ -69,16 +69,17 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       const publicClient = getPublicClient(+params.chainId)
       const token = getAddress(params.query!)
 
-      if (publicClient && MULTICALL_ADDRESSES[+params.chainId]) {
-        const tokenMetadata = await getTokenMetadata(token, 421614) // @todo check
+      const oftFactory = OFT_FACTORY[+params.chainId]
+      const multicall = MULTICALL_ADDRESSES[+params.chainId]
 
-        if (tokenMetadata.name && tokenMetadata.symbol) {
-          const bridges: any = {}
+      if (publicClient && multicall) {
+        if (params.chainId == 421614) {
+          const tokenMetadata = await getTokenMetadata(token, 421614) // @todo check
 
-          const oftFactory = OFT_FACTORY[+params.chainId]
+          if (tokenMetadata.name && tokenMetadata.symbol) {
+            const bridges: any = {}
 
-          if (oftFactory) {
-            if (params.chainId == 421614) {
+            if (oftFactory) {
               const oftResults = await publicClient.multicall({
                 contracts: [
                   {
@@ -95,50 +96,78 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
                   },
                   // @todo add other chain
                 ],
-                multicallAddress: MULTICALL_ADDRESSES[+params.chainId]!,
+                multicallAddress: getAddress(multicall),
               })
 
               bridges[params.chainId] = oftResults[0].result
               bridges[84004] = oftResults[1].result
-            } else if (params.chainId == 84004) {
-              const oftResults = await publicClient.multicall({
-                contracts: [
-                  {
-                    abi: OFTAdapterFactoryAbi,
-                    address: getAddress(oftFactory),
-                    args: [token],
-                    functionName: "adapters",
-                  },
-                  {
-                    abi: OFTAdapterFactoryAbi,
-                    address: getAddress(oftFactory),
-                    args: [token, 421614],
-                    functionName: "destOFTs",
-                  },
-                  // @todo add other chain
-                ],
-                multicallAddress: MULTICALL_ADDRESSES[+params.chainId]!,
-              })
-
-              bridges[params.chainId] = oftResults[0].result
-              bridges[421614] = oftResults[1].result
             }
+
+            _data = [
+              {
+                address: token,
+                bridges: bridges,
+                chainId: +params.chainId,
+                decimals: 18,
+                logoURI: "todo",
+                name: tokenMetadata.name,
+                symbol: tokenMetadata.symbol,
+              },
+            ]
+          }
+        } else if (params.chainId == 84004) {
+          const bridges: any = {}
+
+          let tokenMetadata: { name: null | string; symbol: null | string } = { name: null, symbol: null }
+
+          if (oftFactory) {
+            const oftResults = await publicClient.multicall({
+              contracts: [
+                {
+                  abi: OFTAdapterFactoryAbi,
+                  address: getAddress(oftFactory),
+                  args: [token],
+                  functionName: "adapters",
+                },
+                {
+                  abi: OFTAdapterFactoryAbi,
+                  address: getAddress(oftFactory),
+                  args: [token, 421614],
+                  functionName: "destOFTs",
+                },
+                // @todo add other chain
+              ],
+              multicallAddress: MULTICALL_ADDRESSES[+params.chainId]!,
+            })
+
+            bridges[params.chainId] = token
+            bridges[421614] = oftResults[1].result
+
+            const arbPublicClient = getPublicClient(421614)
+
+            const rootToken = (await arbPublicClient.readContract({
+              abi: OFTAdapterFactoryAbi,
+              address: getAddress(OFT_FACTORY[421614]),
+              args: [oftResults[1].result],
+              functionName: "adapters",
+            })) as Address
+
+            tokenMetadata = await getTokenMetadata(rootToken, 421614) // @todo check
           }
 
-          _data = [
-            // @todo fetch token or create adapter
-            // 0xd9f96278A0d722ED5b0977aA2f3f60cc5E885833
-
-            {
-              address: getAddress(params.query!),
-              bridges: bridges,
-              chainId: +params.chainId,
-              decimals: 18,
-              logoURI: "todo",
-              name: tokenMetadata.name,
-              symbol: tokenMetadata.symbol,
-            },
-          ]
+          if (tokenMetadata.name && tokenMetadata.symbol) {
+            _data = [
+              {
+                address: getAddress(token),
+                bridges: bridges,
+                chainId: +params.chainId,
+                decimals: 18,
+                logoURI: "todo",
+                name: tokenMetadata.name,
+                symbol: tokenMetadata.symbol,
+              },
+            ]
+          }
         }
       }
     }
