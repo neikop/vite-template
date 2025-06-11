@@ -302,7 +302,12 @@ const MultiSignBox = () => {
                 <Text fontSize="sm" fontWeight="semibold">
                   Amount
                 </Text>
-                <BalanceDisplay chain={fromChain} onMax={(balance) => setInputAmount(balance)} token={token} />
+                <BalanceDisplay
+                  address={vaultAddress}
+                  chain={fromChain}
+                  onMax={(balance) => setInputAmount(balance)}
+                  token={token}
+                />
               </Flex>
               <Flex gap={2} justifyContent="space-between">
                 <NumericInput

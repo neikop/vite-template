@@ -6,13 +6,15 @@ import { createPublicClient, formatEther, http } from "viem"
 import { useAccount } from "wagmi"
 
 type Props = {
+  address?: Address
   chain?: Chain | null
   onMax?: (balance: string) => void
   token?: null | Token
 }
 
-const BalanceDisplay = ({ chain, onMax, token }: Props) => {
-  const { address } = useAccount()
+const BalanceDisplay = ({ address: addressFromProps, chain, onMax, token }: Props) => {
+  const { address: addressFromAccount } = useAccount()
+  const address = addressFromProps ?? addressFromAccount
 
   const fetchBalance = async (): Promise<bigint> => {
     if (!address || !chain || !token) return 0n
