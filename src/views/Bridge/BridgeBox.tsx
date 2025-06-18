@@ -13,6 +13,8 @@ import { shortenAddress } from "utils/common"
 import { createPublicClient, http, parseEther } from "viem"
 import { useAccount, useSwitchChain, useWalletClient } from "wagmi"
 
+import { encodeOptions } from "./utils"
+
 const BridgeBox = () => {
   const { address, isConnected } = useAccount()
   const { data: walletClient } = useWalletClient()
@@ -92,8 +94,12 @@ const BridgeBox = () => {
     const amount = parseEther(inputAmount)
     const toAddress = address
 
-    // bytes memory options = OptionsBuilder.newOptions().addExecutorLzReceiveOption(200000, 0);
-    const options = "0x00030100110100000000000000000000000000030d40"
+    const options = encodeOptions(
+      200000n, // gas
+      0n, // value
+      200000n, // native value
+      address, // native receiver in dest chain
+    )
 
     const sendParam = [
       outputChain.id, // destination chain
