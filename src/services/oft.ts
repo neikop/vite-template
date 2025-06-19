@@ -1,7 +1,4 @@
-import { MULTICALL_ADDRESSES, OFT_FACTORY } from "config/contracts"
-import { getPublicClient } from "config/walletConnect"
 import { OFTAbi, OFTAdapterFactoryAbi, OFTFactoryAbi } from "contracts/abis"
-import { ZeroAddress } from "ethers"
 import {
   Client,
   createWalletClient,
