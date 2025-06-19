@@ -5,16 +5,30 @@ import { ZeroAddress } from "ethers"
 import {
   Client,
   createWalletClient,
+  encodeAbiParameters,
+  encodePacked,
   erc20Abi,
   getAddress,
   http,
+  keccak256,
   pad,
+  parseAbiParameters,
   parseEventLogs,
   WalletClient,
   zeroAddress,
 } from "viem"
 
 import { getRelayer } from "./getRelayer"
+import { getPublicClient } from "config/walletConnect"
+import {
+  EID,
+  ENDPOINTS,
+  MULTICALL_ADDRESSES,
+  OFT_FACTORY,
+  OFTAdapterCreationCode,
+  OFTCreationCode,
+} from "config/contracts"
+import { ZeroAddress } from "ethers"
 
 export const getTokenMetadata = async (token: Address, chainId: number) => {
   const tokenMetadata = await getPublicClient(chainId).multicall({
@@ -43,89 +57,112 @@ export const createOFTAdapter = async (chainId: number, token: Address, walletCl
   const bridges: Record<number, Address> = {}
 
   const tokenMetadata = await getTokenMetadata(token, chainId)
-  if (chainId === 421614) {
-    const { relayer } = getRelayer(84004)
-    const relayerPublicClient = getPublicClient(84004)
-    // create oft on devnet
-    console.log("==== creating oft on devnet ====")
 
-    let adapter = (await relayerPublicClient.readContract({
-      abi: OFTFactoryAbi,
-      address: getAddress(OFT_FACTORY[84004]),
-      args: [token],
-      functionName: "adapters",
-    })) as Address
+  if (!tokenMetadata.name || !tokenMetadata.symbol) return bridges
 
-    if (adapter === ZeroAddress) {
-      const tx = await relayer.writeContract({
-        abi: OFTFactoryAbi,
+  try {
+    if (chainId === 421614) {
+      const { relayer } = getRelayer(84004)
+      const relayerPublicClient = getPublicClient(84004)
+      // create oft on devnet
+      console.log("==== creating oft on devnet ====")
+
+      let adapter = (await relayerPublicClient.readContract({
         address: getAddress(OFT_FACTORY[84004]),
-        args: [token, tokenMetadata.name, tokenMetadata.symbol],
-        functionName: "newOFT",
-      })
-      const txReceipt = await relayerPublicClient.waitForTransactionReceipt({
-        hash: tx,
-      })
-      const events = parseEventLogs({
         abi: OFTFactoryAbi,
-        logs: txReceipt.logs,
-      })
-      console.log("🚀 ~ devnetService.ts:148 ~ fetchTokens ~ events:", events)
+        functionName: "adapters",
+        args: [token],
+      })) as Address
+      if (adapter === ZeroAddress) {
+        const tx = await relayer.writeContract({
+          address: getAddress(OFT_FACTORY[84004]),
+          abi: OFTFactoryAbi,
+          functionName: "createOFT",
+          args: [
+            token,
+            tokenMetadata.name,
+            tokenMetadata.symbol,
+            [EID[chainId]],
+            [
+              keccak256(
+                encodePacked(
+                  ["bytes", "bytes"],
+                  [
+                    OFTAdapterCreationCode as `0x${string}`,
+                    encodeAbiParameters(parseAbiParameters("address, address, address"), [
+                      token,
+                      getAddress(ENDPOINTS[chainId]),
+                      getAddress(OFT_FACTORY[chainId]),
+                    ]),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        })
+        const txReceipt = await relayerPublicClient.waitForTransactionReceipt({
+          hash: tx,
+        })
+        const events = parseEventLogs({
+          abi: OFTFactoryAbi,
+          logs: txReceipt.logs,
+        })
+        console.log("🚀 ~ oft.ts:103 ~ createOFTAdapter ~ events:", events)
+        adapter = (events[0] as any)?.args?.oft ?? zeroAddress
+      }
 
-      adapter = (events[0] as any)?.args?.oft ?? zeroAddress
-    }
-
-    console.log("🚀 ~ oft.ts:80 ~ adapter:", adapter)
-
-    // create adapter on source chain
-    const publicClient = getPublicClient(chainId)
-    let srcAdapter = (await publicClient.readContract({
-      abi: OFTAdapterFactoryAbi,
-      address: getAddress(OFT_FACTORY[chainId]),
-      args: [token],
-      functionName: "adapters",
-    })) as Address
-
-    if (adapter !== zeroAddress && srcAdapter === zeroAddress && walletClient?.account) {
-      console.log("==== creating adapter on arb ====")
-      const tx = await walletClient.writeContract({
-        abi: OFTAdapterFactoryAbi,
-        account: walletClient.account,
+      // create adapter on source chain
+      const publicClient = getPublicClient(chainId)
+      let srcAdapter = (await publicClient.readContract({
         address: getAddress(OFT_FACTORY[chainId]),
-        args: [token, 84004, adapter], // adapter is peer in source chain
-        chain: publicClient.chain,
-        functionName: "oftAdapter",
-      })
-      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: tx })
-      const events = parseEventLogs({
         abi: OFTAdapterFactoryAbi,
-        logs: txReceipt.logs,
-      })
-      console.log("🚀 ~ oft.ts:103 ~ createOFTAdapter ~ events:", events)
-      srcAdapter = (events[0] as any)?.args?.adapter ?? zeroAddress
-    }
+        functionName: "adapters",
+        args: [token],
+      })) as Address
 
-    // set dest oft in devnet
-    const oft = await relayerPublicClient.readContract({
-      abi: OFTFactoryAbi,
-      address: getAddress(OFT_FACTORY[84004]),
-      args: [token, chainId],
-      functionName: "destOFTs",
-    })
-    if (oft === zeroAddress && srcAdapter) {
-      const tx = await relayer.writeContract({
-        abi: OFTFactoryAbi,
-        address: getAddress(OFT_FACTORY[84004]),
-        args: [token, chainId, srcAdapter],
-        functionName: "setDestOFT",
-      })
-      await relayerPublicClient.waitForTransactionReceipt({
-        hash: tx,
-      })
-    }
+      if (adapter !== zeroAddress && srcAdapter === zeroAddress && walletClient?.account) {
+        console.log("==== creating adapter on arb ====")
+        const tx = await walletClient.writeContract({
+          address: getAddress(OFT_FACTORY[chainId]),
+          abi: OFTAdapterFactoryAbi,
+          functionName: "createOFTAdapter",
+          args: [
+            token,
+            [EID[84004]],
+            [
+              keccak256(
+                encodePacked(
+                  ["bytes", "bytes"],
+                  [
+                    OFTCreationCode as `0x${string}`,
+                    encodeAbiParameters(parseAbiParameters("string, string, address, address"), [
+                      tokenMetadata.name,
+                      tokenMetadata.symbol,
+                      getAddress(ENDPOINTS[84004]),
+                      getAddress(OFT_FACTORY[84004]),
+                    ]),
+                  ],
+                ),
+              ),
+            ],
+          ], // adapter is peer in source chain
+          chain: publicClient.chain,
+          account: walletClient.account,
+        })
+        const txReceipt = await publicClient.waitForTransactionReceipt({ hash: tx })
+        const events = parseEventLogs({
+          abi: OFTAdapterFactoryAbi,
+          logs: txReceipt.logs,
+        })
+        console.log("🚀 ~ oft.ts:103 ~ createOFTAdapter ~ events:", events)
+        srcAdapter = (events[0] as any)?.args?.adapter ?? zeroAddress
+      }
 
-    bridges[chainId] = srcAdapter
-    bridges[84004] = adapter
+      bridges[chainId] = srcAdapter
+      bridges[84004] = adapter
+    }
+  } catch (error) {
+    console.log("🚀 ~ oft.ts:157 ~ createOFTAdapter ~ error:", error)
   }
 
   return bridges

@@ -67,7 +67,7 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
 
     if (!_data.length && getAddress(params.query!)) {
       const publicClient = getPublicClient(+params.chainId)
-      const token = getAddress(params.query!)
+      let token = getAddress(params.query!)
 
       const oftFactory = OFT_FACTORY[+params.chainId]
       const multicall = MULTICALL_ADDRESSES[+params.chainId]
@@ -77,7 +77,7 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
           const tokenMetadata = await getTokenMetadata(token, 421614) // @todo check
 
           if (tokenMetadata.name && tokenMetadata.symbol) {
-            const bridges: any = {}
+            let bridges: any = {}
 
             if (oftFactory) {
               const oftResults = await publicClient.multicall({
@@ -116,24 +116,24 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
             ]
           }
         } else if (params.chainId == 84004) {
-          const bridges: any = {}
+          let bridges: any = {}
 
-          let tokenMetadata: { name: null | string; symbol: null | string } = { name: null, symbol: null }
+          let tokenMetadata: { name: string | null; symbol: string | null } = { name: null, symbol: null }
 
           if (oftFactory) {
             const oftResults = await publicClient.multicall({
               contracts: [
                 {
-                  abi: OFTAdapterFactoryAbi,
                   address: getAddress(oftFactory),
-                  args: [token],
+                  abi: OFTAdapterFactoryAbi,
                   functionName: "adapters",
+                  args: [token],
                 },
                 {
-                  abi: OFTAdapterFactoryAbi,
                   address: getAddress(oftFactory),
-                  args: [token, 421614],
+                  abi: OFTAdapterFactoryAbi,
                   functionName: "destOFTs",
+                  args: [token, 421614],
                 },
                 // @todo add other chain
               ],
@@ -146,10 +146,10 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
             const arbPublicClient = getPublicClient(421614)
 
             const rootToken = (await arbPublicClient.readContract({
-              abi: OFTAdapterFactoryAbi,
               address: getAddress(OFT_FACTORY[421614]),
-              args: [oftResults[1].result],
+              abi: OFTAdapterFactoryAbi,
               functionName: "adapters",
+              args: [oftResults[1].result],
             })) as Address
 
             tokenMetadata = await getTokenMetadata(rootToken, 421614) // @todo check

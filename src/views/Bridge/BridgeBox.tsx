@@ -14,6 +14,7 @@ import { createPublicClient, http, parseEther } from "viem"
 import { useAccount, useSwitchChain, useWalletClient } from "wagmi"
 
 import { encodeOptions } from "./utils"
+import { EID } from "config/contracts"
 
 const BridgeBox = () => {
   const { address, isConnected } = useAccount()
@@ -47,13 +48,15 @@ const BridgeBox = () => {
       })) as bigint
 
       if (allowance < amount) {
-        await walletClient.writeContract({
+        const tx = await walletClient.writeContract({
           abi: ERC20Abi,
           account: address,
           address: token.address,
           args: [inputOFTAddress, amount],
           functionName: "approve",
         })
+
+        await publicClient.waitForTransactionReceipt({ hash: tx })
 
         const allowanceAfter = (await publicClient.readContract({
           abi: ERC20Abi,
@@ -102,7 +105,7 @@ const BridgeBox = () => {
     )
 
     const sendParam = [
-      outputChain.id, // destination chain
+      EID[outputChain.id], // destination chain
       ethers.zeroPadValue(toAddress, 32), // to
       amount, // token amount to send
       (amount * 9_900n) / 10_000n, // mint token amount
