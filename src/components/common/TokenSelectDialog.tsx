@@ -61,7 +61,7 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
       const service = isDevnet ? devnetService : kyberService
       return service.fetchTokens({
         walletClient,
-        chainId: isDevnet ? fromChain?.id! : chainId!,
+        chainId: isDevnet ? fromChain!.id! : chainId!,
         feature,
         page,
         pageSize: 20,
@@ -130,7 +130,7 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
                               if (noBridge) {
                                 setCreatingAdapter(true)
                                 const bridges = await createOFTAdapter(
-                                  isDevnet ? fromChain?.id! : chainId!,
+                                  isDevnet ? fromChain!.id! : chainId!,
                                   token.address,
                                   walletClient,
                                 )

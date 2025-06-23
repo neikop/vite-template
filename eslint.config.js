@@ -29,6 +29,7 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-empty-object-type": "off",
+      "prefer-const": "warn",
       "prettier/prettier": "warn",
       "perfectionist/sort-imports": "warn",
       "perfectionist/sort-exports": "warn",
