@@ -2,21 +2,25 @@ import { Address } from "viem"
 
 export const EID: Record<number, number> = {
   [84004]: 24004,
+  [84009]: 24009,
   [421614]: 1614,
 }
 
 export const MULTICALL_ADDRESSES: Record<number, Address> = {
   [84004]: "0xa73A817D504D365c3562E36D05bA7FBE5bdC8Cb1",
+  [84009]: "0xdbbF4542574a8c6e54e3F0e5f8F9Eea3e463F9B8",
   [421614]: "0x32d8Bd37264f7568187Df0Cc19381f809682827A",
 }
 
 export const ENDPOINTS: Record<number, Address> = {
   [84004]: "0x24C092b442De7fA1978509982d901B0bd86dB08B",
+  [84009]: "0xbB485B1c9f662abA2A8cD67a1B0479480c635F6a",
   [421614]: "0xE73fb84aFDADd8c1F336910910b6b0799AcF74c1",
 }
 
 export const OFT_FACTORY: Record<number, Address> = {
   [84004]: "0x7690629B3BdaFE63247C46462c49a7612287b52c",
+  [84009]: "0x1083842340885C901bC3Ee02E0F320731266222a",
   [421614]: "0xebF0ED10f6A4De9aa68aFF9d206ea7c8b0f25735",
 }
 
