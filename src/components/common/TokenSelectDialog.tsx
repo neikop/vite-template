@@ -69,7 +69,6 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
         page,
         pageSize: 20,
         query: debouncedSearchText,
-        walletClient,
       })
     },
     queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
