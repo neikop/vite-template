@@ -43,10 +43,11 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       symbol: "ERC20Intent",
     },
     {
-      address: "0x25052ec0e31e8a4b3945a0700f56c5b74988b496",
+      address: "0x3C057954865E91a454De5B4C8E7701638B448b8E",
       bridges: {
-        421_614: "0xa2384079888B9F5Bf7a2e0387C12C70d810f3e5B",
-        84004: "0x281138d955531d6438a391a3676e54728B9FCC3C",
+        421_614: "0xdDe7f7ed82E9e8672717c67755E38255f9f2Eb33",
+        84004: "0x89811Bb7Cbe97Dca566017Fd7CFB64210BE32435",
+        84009: "0xF6905F45f672395a5e53FcaF0a728BD877e0c41E",
       },
       chainId: 421_614,
       decimals: 18,
@@ -55,12 +56,24 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       symbol: "USDT",
     },
     {
-      address: "0x281138d955531d6438a391a3676e54728B9FCC3C",
+      address: "0x89811Bb7Cbe97Dca566017Fd7CFB64210BE32435",
       bridges: {
-        421_614: "0xa2384079888B9F5Bf7a2e0387C12C70d810f3e5B",
-        84004: "0x281138d955531d6438a391a3676e54728B9FCC3C",
+        421_614: "0xdDe7f7ed82E9e8672717c67755E38255f9f2Eb33",
+        84004: "0x89811Bb7Cbe97Dca566017Fd7CFB64210BE32435",
       },
       chainId: 84004,
+      decimals: 18,
+      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      name: "USDT",
+      symbol: "USDT",
+    },
+    {
+      address: "0xF6905F45f672395a5e53FcaF0a728BD877e0c41E",
+      bridges: {
+        421_614: "0xdDe7f7ed82E9e8672717c67755E38255f9f2Eb33",
+        84009: "0xF6905F45f672395a5e53FcaF0a728BD877e0c41E",
+      },
+      chainId: 84009,
       decimals: 18,
       logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
       name: "USDT",
