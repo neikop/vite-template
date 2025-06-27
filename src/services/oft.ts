@@ -59,17 +59,14 @@ export const createOFTAdapter = async (chainId: number, token: Address, walletCl
 
   try {
     if (chainId === 421614) {
-      const { relayer } = getRelayer(84004)
-      const relayerPublicClient = getPublicClient(84004)
-      // create oft on devnet
-      console.log("==== creating oft on devnet ====")
-
       const destChainIds = [84004, 84009]
-
       let _adapters: Record<number, string> = {}
 
       await Promise.all(
         destChainIds.map(async (_chainId) => {
+          const { relayer } = getRelayer(_chainId)
+          const relayerPublicClient = getPublicClient(_chainId)
+
           let adapter = (await relayerPublicClient.readContract({
             address: getAddress(OFT_FACTORY[_chainId]),
             abi: OFTFactoryAbi,
