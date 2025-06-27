@@ -31,6 +31,18 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       symbol: "USDC",
     },
     {
+      address: "0x7932606E387479C9cc97efde08BDcaFC5A50ac5A",
+      chainId: 84009,
+      decimals: 18,
+      intent: {
+        handler: "0x831880Bd3b331249DF63bacC6e21495e5e8f1eAA",
+        isc: "0x68bc42F886ddf6a4b0B90a9496493dA1f8304536",
+      },
+      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      name: "ERC20Intent",
+      symbol: "ERC20Intent",
+    },
+    {
       address: "0x25052ec0e31e8a4b3945a0700f56c5b74988b496",
       bridges: {
         421_614: "0xa2384079888B9F5Bf7a2e0387C12C70d810f3e5B",

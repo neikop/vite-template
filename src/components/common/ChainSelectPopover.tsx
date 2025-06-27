@@ -1,6 +1,6 @@
 import { Button, ButtonProps, Image, Popover, Portal, Stack, useDisclosure } from "@chakra-ui/react"
 import { Chain } from "@rainbow-me/rainbowkit"
-import { onematrix } from "config/walletConnect"
+import { onematrix, onematrixTestnet } from "config/walletConnect"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { arbitrum, arbitrumSepolia } from "viem/chains"
@@ -9,6 +9,7 @@ import { useSwitchChain } from "wagmi"
 const bridgeChains: Chain[] = [
   { ...arbitrum, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
   onematrix,
+  onematrixTestnet,
   { ...arbitrumSepolia, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
 ]
 
@@ -29,7 +30,7 @@ const ChainSelectPopover = ({ buttonProps, isDevnet, onChange, shouldSync, value
 
   const availableChains = bridgeChains.filter((chain) => {
     if (isDevnet) {
-      return chain.id === onematrix.id
+      return chain.id === onematrix.id || chain.id === onematrixTestnet.id
     }
     return true
   })
