@@ -126,9 +126,9 @@ export const createOFTAdapter = async (chainId: number, token: Address, walletCl
       let eidList: number[] = []
       let bytes: string[] = []
 
-      for (let [_eid, adapter] of Object.entries(_adapters)) {
+      for (let [_chainId, adapter] of Object.entries(_adapters)) {
         if (adapter !== zeroAddress) {
-          eidList.push(Number(_eid))
+          eidList.push(EID[Number(_chainId)])
           bytes.push(
             keccak256(
               encodePacked(
@@ -138,15 +138,15 @@ export const createOFTAdapter = async (chainId: number, token: Address, walletCl
                   encodeAbiParameters(parseAbiParameters("string, string, address, address"), [
                     tokenMetadata.name,
                     tokenMetadata.symbol,
-                    getAddress(ENDPOINTS[Number(_eid)]),
-                    getAddress(OFT_FACTORY[Number(_eid)]),
+                    getAddress(ENDPOINTS[Number(_chainId)]),
+                    getAddress(OFT_FACTORY[Number(_chainId)]),
                   ]),
                 ],
               ),
             ),
           )
 
-          bridges[Number(_eid)] = adapter as `0x${string}`
+          bridges[Number(_chainId)] = adapter as `0x${string}`
         }
       }
 
