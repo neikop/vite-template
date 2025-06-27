@@ -1,6 +1,6 @@
 import { Button, ButtonProps, Image, Popover, Portal, Stack, useDisclosure } from "@chakra-ui/react"
 import { Chain } from "@rainbow-me/rainbowkit"
-import { onematrix } from "config/walletConnect"
+import { onematrix, onematrixTestnet } from "config/walletConnect"
 import { useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { arbitrum, arbitrumSepolia } from "viem/chains"
@@ -9,18 +9,19 @@ import { useSwitchChain } from "wagmi"
 const bridgeChains: Chain[] = [
   { ...arbitrum, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
   onematrix,
+  onematrixTestnet,
   { ...arbitrumSepolia, iconUrl: "https://sepolia.arbiscan.io/assets/generic/html/favicon.ico" },
 ]
 
 type Props = {
   buttonProps?: ButtonProps
+  isDevnet?: boolean
   onChange?: (chain: Chain | null) => void
   shouldSync?: boolean
-  testnet?: boolean
   value?: Chain | null
 }
 
-const ChainSelectPopover = ({ buttonProps, onChange, shouldSync, testnet, value }: Props) => {
+const ChainSelectPopover = ({ buttonProps, isDevnet, onChange, shouldSync, value }: Props) => {
   const { switchChain } = useSwitchChain()
 
   const { onClose, open, setOpen } = useDisclosure()
@@ -28,8 +29,8 @@ const ChainSelectPopover = ({ buttonProps, onChange, shouldSync, testnet, value 
   const [currentChain, setCurrentChain] = useState<Chain | null>(null)
 
   const availableChains = bridgeChains.filter((chain) => {
-    if (testnet !== undefined) {
-      return chain.testnet === testnet
+    if (isDevnet) {
+      return chain.id === onematrix.id || chain.id === onematrixTestnet.id
     }
     return true
   })

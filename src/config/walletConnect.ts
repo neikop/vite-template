@@ -1,6 +1,6 @@
 import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit"
 import { WALLET_CONNECT_PROJECT_ID } from "config/env"
-import { defineChain, createPublicClient, http } from "viem"
+import { createPublicClient, defineChain, http } from "viem"
 import { arbitrum, arbitrumSepolia, berachain, mainnet } from "wagmi/chains"
 
 Object.assign(arbitrum, { iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/11841.png" })
@@ -18,6 +18,22 @@ export const onematrix: Chain = defineChain({
   rpcUrls: {
     default: {
       http: ["https://devnet2-el-1.vinid.info"],
+    },
+  },
+  testnet: true,
+})
+
+export const onematrixTestnet: Chain = defineChain({
+  blockExplorers: {
+    default: { name: "1Matrix Public Testnet", url: "https://explorer.vietcha.in" },
+  },
+  iconUrl: "https://explorer.vietcha.in/assets/favicon/favicon.ico",
+  id: 84009,
+  name: "1Matrix Public Testnet",
+  nativeCurrency: { decimals: 18, name: "PAVEN", symbol: "PAVEN" },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.vietcha.in"],
     },
   },
   testnet: true,
@@ -41,7 +57,7 @@ export const onematrixL2: Chain = defineChain({
 
 export const wagmiConfig = getDefaultConfig({
   appName: "Kite Template",
-  chains: [arbitrum, onematrix, arbitrumSepolia],
+  chains: [arbitrum, onematrix, onematrixTestnet, arbitrumSepolia],
   projectId: WALLET_CONNECT_PROJECT_ID,
   ssr: false,
 })
@@ -51,6 +67,12 @@ export const getPublicClient = (chainId: number) => {
     case 84004:
       return createPublicClient({
         chain: onematrix,
+        transport: http(),
+      })
+
+    case 84009:
+      return createPublicClient({
+        chain: onematrixTestnet,
         transport: http(),
       })
 

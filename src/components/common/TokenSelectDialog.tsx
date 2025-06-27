@@ -11,21 +11,24 @@ import {
   Portal,
   SkeletonCircle,
   SkeletonText,
+  Spinner,
   Stack,
   Text,
   useDialog,
-  Spinner,
 } from "@chakra-ui/react"
 import { Chain } from "@rainbow-me/rainbowkit"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { InfiniteScroller } from "components/common"
-import { useState } from "react"
+import { ERC20Abi } from "contracts/abis"
+import { uniqBy } from "lodash"
+import { useEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
 import { devnetService, kyberService } from "services"
 import { createOFTAdapter } from "services/oft"
-import { zeroAddress } from "viem"
-import { useAccount, useClient, useWalletClient } from "wagmi"
+import { useTokensStore } from "store/tokensStore"
+import { createPublicClient, http, isAddress, zeroAddress } from "viem"
+import { useAccount, useWalletClient } from "wagmi"
 
 type Props = {
   buttonProps?: ButtonProps
@@ -71,6 +74,54 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
     queryKey: ["kyberService.fetchTokens", { chainId, feature, fromChain, query: debouncedSearchText }],
   })
 
+  const { addToken, tokens: importedTokens } = useTokensStore()
+
+  const [fetchedTokens, setFetchedTokens] = useState<Token[]>(importedTokens)
+  const [loadingTokens, setLoadingTokens] = useState(false)
+
+  const availableTokens = useMemo(() => {
+    let allTokens = (data?.pages.flatMap((page) => page.tokens) ?? []).concat(fetchedTokens)
+    if (isAddress(debouncedSearchText)) {
+      allTokens = allTokens.filter((token) => token.address === debouncedSearchText)
+    }
+    return allTokens
+  }, [data, fetchedTokens, debouncedSearchText])
+
+  useEffect(() => {
+    const getTokenInfo = async (chain: Chain, tokenAddress: Address) => {
+      const publicClient = createPublicClient({
+        chain: chain,
+        transport: http(),
+      })
+
+      setLoadingTokens(true)
+      const [symbol, decimals] = await Promise.all([
+        publicClient.readContract({ abi: ERC20Abi, address: tokenAddress, functionName: "symbol" }),
+        publicClient.readContract({ abi: ERC20Abi, address: tokenAddress, functionName: "decimals" }),
+      ]).finally(() => {
+        setLoadingTokens(false)
+      })
+
+      const newToken = {
+        address: tokenAddress,
+        chainId: chain.id,
+        decimals,
+        isImport: true,
+        logoURI: "https://sepolia.arbiscan.io/assets/arbsepolia/images/svg/empty-token.svg?v=25.5.4.0",
+        name: symbol,
+        symbol,
+      } as Token
+
+      setFetchedTokens((tokens) => {
+        return uniqBy(tokens.concat(newToken), "address")
+      })
+    }
+
+    if (fromChain && isAddress(debouncedSearchText)) {
+      getTokenInfo(fromChain, debouncedSearchText)
+    }
+  }, [fromChain, debouncedSearchText, addToken])
+
   return (
     <Dialog.RootProvider placement="top" scrollBehavior="inside" size="sm" value={dialog}>
       <Dialog.Trigger asChild>
@@ -112,63 +163,62 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
                   />
                 </Box>
                 <Stack gap={2} minH={240}>
-                  {data?.pages
-                    .flatMap((page) => page.tokens)
-                    .map((token) => {
-                      const isSelected = token.address === selectedToken?.address
-                      return (
-                        <Button
-                          borderRadius={8}
-                          colorPalette={isSelected ? "purple" : "gray"}
-                          justifyContent="flex-start"
-                          key={`${token.chainId}/${token.address}`}
-                          minH={12}
-                          onClick={async () => {
-                            try {
-                              let _token = { ...token }
-                              const noBridge = Object.values(token?.bridges ?? {}).some((i) => i === zeroAddress)
-                              if (noBridge) {
-                                setCreatingAdapter(true)
-                                const bridges = await createOFTAdapter(
-                                  isDevnet ? fromChain!.id! : chainId!,
-                                  token.address,
-                                  walletClient,
-                                )
-                                _token = { ...token, bridges }
-                              }
-                              setCurrentToken(_token)
-                              onChange?.(_token)
-                              setCreatingAdapter(false)
-                              dialog.setOpen(false)
-                            } catch (error) {
-                              setCreatingAdapter(false)
+                  {availableTokens.map((token) => {
+                    const isSelected = token.address === selectedToken?.address
+                    return (
+                      <Button
+                        borderRadius={8}
+                        colorPalette={isSelected ? "purple" : "gray"}
+                        justifyContent="flex-start"
+                        key={`${token.chainId}/${token.address}`}
+                        minH={12}
+                        onClick={async () => {
+                          try {
+                            let _token = { ...token }
+                            const noBridge = Object.values(token?.bridges ?? {}).some((i) => i === zeroAddress)
+                            if (noBridge) {
+                              setCreatingAdapter(true)
+                              const bridges = await createOFTAdapter(
+                                (isDevnet ? fromChain?.id : chainId) as number,
+                                token.address,
+                                walletClient,
+                              )
+                              _token = { ...token, bridges }
                             }
-                          }}
-                          overflow="hidden"
-                          px={2}
-                          variant={isSelected ? "subtle" : "ghost"}
-                        >
-                          <Image h={6} rounded="full" src={token.logoURI} w={6} />
-                          <Box flex={1} overflow="hidden" textAlign="left">
-                            <Text>{token.symbol}</Text>
-                            <Flex flex={1} gap={4} justifyContent="space-between">
-                              <Text color="textSecondary" fontSize="xs" fontWeight="normal" truncate={true}>
-                                {token.name}
-                              </Text>
-                              <Text color="textSecondary" fontSize="xs" fontWeight="normal">
-                                ChainID: {token.chainId}
-                              </Text>
-                            </Flex>
-                          </Box>
+                            setCurrentToken(_token)
+                            onChange?.(_token)
+                            if (token.isImport) addToken(_token)
+                            dialog.setOpen(false)
+                            setCreatingAdapter(false)
+                          } catch (error) {
+                            setCreatingAdapter(false)
+                          }
+                        }}
+                        overflow="hidden"
+                        px={2}
+                        variant={isSelected ? "subtle" : "ghost"}
+                      >
+                        <Image h={6} rounded="full" src={token.logoURI} w={6} />
+                        <Box flex={1} overflow="hidden" textAlign="left">
+                          <Text>{token.symbol}</Text>
+                          <Flex flex={1} gap={4} justifyContent="space-between">
+                            <Text color="textSecondary" fontSize="xs" fontWeight="normal" truncate={true}>
+                              {token.name}
+                            </Text>
+                            <Text color="textSecondary" fontSize="xs" fontWeight="normal">
+                              ChainID: {token.chainId}
+                            </Text>
+                          </Flex>
+                        </Box>
 
-                          {Object.values(token?.bridges ?? {}).some((i) => i === zeroAddress) ? (
-                            <>{creatingAdapter ? <Spinner /> : <Text>Create Adapter</Text>}</>
-                          ) : null}
-                        </Button>
-                      )
-                    })}
+                        {Object.values(token?.bridges ?? {}).some((i) => i === zeroAddress) ? (
+                          <>{creatingAdapter ? <Spinner /> : <Text>Create Adapter</Text>}</>
+                        ) : null}
+                      </Button>
+                    )
+                  })}
 
-                  {isFetching && (
+                  {(isFetching || loadingTokens) && (
                     <Flex alignItems="center" gap={2} h={12} px={1}>
                       <SkeletonCircle size={8} />
                       <SkeletonText noOfLines={2} />

@@ -1,5 +1,6 @@
 import { Bridge } from "views/Bridge"
 import { Guide } from "views/Component"
+import { MultiSign } from "views/MultiSign"
 import { Transfer } from "views/Transfer"
 
 const privateRoute = {
@@ -17,6 +18,11 @@ const privateRoute = {
     component: Bridge,
     name: "Bridge",
     path: "/bridge",
+  },
+  multiSign: {
+    component: MultiSign,
+    name: "Vault",
+    path: "/vault",
   },
   transfer: {
     component: Transfer,

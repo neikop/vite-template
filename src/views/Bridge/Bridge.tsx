@@ -5,7 +5,7 @@ import { BridgeBox } from "."
 const Bridge = () => {
   return (
     <Container>
-      <Stack alignItems="center" py={16}>
+      <Stack alignItems="center" py={{ md: 16 }}>
         <BridgeBox />
       </Stack>
     </Container>

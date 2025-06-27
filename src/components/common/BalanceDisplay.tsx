@@ -6,13 +6,15 @@ import { createPublicClient, formatEther, http } from "viem"
 import { useAccount } from "wagmi"
 
 type Props = {
+  address?: Address
   chain?: Chain | null
   onMax?: (balance: string) => void
   token?: null | Token
 }
 
-const BalanceDisplay = ({ chain, onMax, token }: Props) => {
-  const { address } = useAccount()
+const BalanceDisplay = ({ address: addressFromProps, chain, onMax, token }: Props) => {
+  const { address: addressFromAccount } = useAccount()
+  const address = addressFromProps ?? addressFromAccount
 
   const fetchBalance = async (): Promise<bigint> => {
     if (!address || !chain || !token) return 0n
@@ -37,8 +39,10 @@ const BalanceDisplay = ({ chain, onMax, token }: Props) => {
   const formattedBalance = formatEther(balance || 0n)
 
   return (
-    <Flex gap={2}>
-      <Text fontSize="sm">Balance: {formattedBalance}</Text>
+    <Flex flex={1} gap={2} justifyContent="flex-end" maxW={{ base: 180, sm: 240 }}>
+      <Text fontSize="sm" truncate={true}>
+        Balance: {formattedBalance}
+      </Text>
       <Button
         colorPalette="purple"
         onClick={() => {

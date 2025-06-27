@@ -1,7 +1,8 @@
 import { MULTICALL_ADDRESSES, OFT_FACTORY } from "config/contracts"
 import { getPublicClient } from "config/walletConnect"
 import { OFTAdapterFactoryAbi } from "contracts/abis"
-import { erc20Abi, getAddress } from "viem"
+import { getAddress } from "viem"
+
 import { getTokenMetadata } from "./oft"
 
 const filterData = (items: Token[], params?: TokensParams) => {
@@ -28,6 +29,18 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
       name: "USDC",
       symbol: "USDC",
+    },
+    {
+      address: "0x7932606E387479C9cc97efde08BDcaFC5A50ac5A",
+      chainId: 84009,
+      decimals: 18,
+      intent: {
+        handler: "0x831880Bd3b331249DF63bacC6e21495e5e8f1eAA",
+        isc: "0x68bc42F886ddf6a4b0B90a9496493dA1f8304536",
+      },
+      logoURI: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      name: "ERC20Intent",
+      symbol: "ERC20Intent",
     },
     {
       address: "0x25052ec0e31e8a4b3945a0700f56c5b74988b496",
@@ -59,7 +72,7 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
 
   let _data = [...data]
 
-  if (typeof params?.query === "string") {
+  if (typeof params?.query === "string" && params.chainId) {
     _data = _data.filter(
       (i) => i.address.toLowerCase().includes(params.query!.toLowerCase()) && params.chainId === i.chainId,
     )
@@ -82,16 +95,16 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
               const oftResults = await publicClient.multicall({
                 contracts: [
                   {
-                    address: getAddress(oftFactory),
                     abi: OFTAdapterFactoryAbi,
-                    functionName: "adapters",
+                    address: getAddress(oftFactory),
                     args: [token],
+                    functionName: "adapters",
                   },
                   {
-                    address: getAddress(oftFactory),
                     abi: OFTAdapterFactoryAbi,
-                    functionName: "destOFTs",
+                    address: getAddress(oftFactory),
                     args: [token, 84004],
+                    functionName: "destOFTs",
                   },
                   {
                     address: getAddress(oftFactory),

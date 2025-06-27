@@ -14,6 +14,7 @@ import {
   WalletClient,
   zeroAddress,
 } from "viem"
+
 import { getRelayer } from "./getRelayer"
 import { getPublicClient } from "config/walletConnect"
 import {
@@ -30,13 +31,13 @@ export const getTokenMetadata = async (token: Address, chainId: number) => {
   const tokenMetadata = await getPublicClient(chainId).multicall({
     contracts: [
       {
-        address: token,
         abi: erc20Abi,
+        address: token,
         functionName: "name",
       },
       {
-        address: token,
         abi: erc20Abi,
+        address: token,
         functionName: "symbol",
       },
     ],
@@ -50,7 +51,7 @@ export const getTokenMetadata = async (token: Address, chainId: number) => {
 }
 
 export const createOFTAdapter = async (chainId: number, token: Address, walletClient?: WalletClient) => {
-  let bridges: Record<number, Address> = {}
+  const bridges: Record<number, Address> = {}
 
   const tokenMetadata = await getTokenMetadata(token, chainId)
 
@@ -58,17 +59,14 @@ export const createOFTAdapter = async (chainId: number, token: Address, walletCl
 
   try {
     if (chainId === 421614) {
-      const { relayer } = getRelayer(84004)
-      const relayerPublicClient = getPublicClient(84004)
-      // create oft on devnet
-      console.log("==== creating oft on devnet ====")
-
       const destChainIds = [84004, 84009]
-
       let _adapters: Record<number, string> = {}
 
       await Promise.all(
         destChainIds.map(async (_chainId) => {
+          const { relayer } = getRelayer(_chainId)
+          const relayerPublicClient = getPublicClient(_chainId)
+
           let adapter = (await relayerPublicClient.readContract({
             address: getAddress(OFT_FACTORY[_chainId]),
             abi: OFTFactoryAbi,
