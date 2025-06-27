@@ -106,13 +106,19 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
                     args: [token, 84004],
                     functionName: "destOFTs",
                   },
-                  // @todo add other chain
+                  {
+                    address: getAddress(oftFactory),
+                    abi: OFTAdapterFactoryAbi,
+                    functionName: "destOFTs",
+                    args: [token, 84009],
+                  },
                 ],
                 multicallAddress: getAddress(multicall),
               })
 
               bridges[params.chainId] = oftResults[0].result
               bridges[84004] = oftResults[1].result
+              bridges[84009] = oftResults[2].result
             }
 
             _data = [
@@ -127,7 +133,7 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
               },
             ]
           }
-        } else if (params.chainId == 84004) {
+        } else if (params.chainId == 84004 || params.chainId == 84009) {
           let bridges: any = {}
 
           let tokenMetadata: { name: string | null; symbol: string | null } = { name: null, symbol: null }

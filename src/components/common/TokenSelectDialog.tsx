@@ -63,7 +63,8 @@ const TokenSelectDialog = ({ buttonProps, feature, fromChain, isDevnet, onChange
     queryFn: ({ pageParam: page }) => {
       const service = isDevnet ? devnetService : kyberService
       return service.fetchTokens({
-        chainId: isDevnet ? fromChain?.id : chainId,
+        walletClient,
+        chainId: isDevnet ? fromChain!.id! : chainId!,
         feature,
         page,
         pageSize: 20,
