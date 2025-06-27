@@ -43,11 +43,11 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       symbol: "ERC20Intent",
     },
     {
-      address: "0x3C057954865E91a454De5B4C8E7701638B448b8E",
+      address: "0xC8450BFfDa9cC84a3d01dFa5DFB0d02DE67fE695",
       bridges: {
-        421_614: "0xdDe7f7ed82E9e8672717c67755E38255f9f2Eb33",
-        84004: "0x89811Bb7Cbe97Dca566017Fd7CFB64210BE32435",
-        84009: "0xF6905F45f672395a5e53FcaF0a728BD877e0c41E",
+        421_614: "0xB2A8A021943205795C3D425Ca949FbcC9B5E5b7d",
+        84004: "0xAe5F0FC80225Ccc1a05fC63a87070d724f784025",
+        84009: "0x541dAfB3BE8E7294b8209d61EC134F8aEE77d3D0",
       },
       chainId: 421_614,
       decimals: 18,
@@ -56,10 +56,10 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       symbol: "USDT",
     },
     {
-      address: "0x89811Bb7Cbe97Dca566017Fd7CFB64210BE32435",
+      address: "0xAe5F0FC80225Ccc1a05fC63a87070d724f784025",
       bridges: {
-        421_614: "0xdDe7f7ed82E9e8672717c67755E38255f9f2Eb33",
-        84004: "0x89811Bb7Cbe97Dca566017Fd7CFB64210BE32435",
+        421_614: "0xB2A8A021943205795C3D425Ca949FbcC9B5E5b7d",
+        84004: "0xAe5F0FC80225Ccc1a05fC63a87070d724f784025",
       },
       chainId: 84004,
       decimals: 18,
@@ -68,10 +68,10 @@ const fetchTokens = async (params?: TokensParams): Promise<TokensPagination> => 
       symbol: "USDT",
     },
     {
-      address: "0xF6905F45f672395a5e53FcaF0a728BD877e0c41E",
+      address: "0x541dAfB3BE8E7294b8209d61EC134F8aEE77d3D0",
       bridges: {
-        421_614: "0xdDe7f7ed82E9e8672717c67755E38255f9f2Eb33",
-        84009: "0xF6905F45f672395a5e53FcaF0a728BD877e0c41E",
+        421_614: "0xB2A8A021943205795C3D425Ca949FbcC9B5E5b7d",
+        84009: "0x541dAfB3BE8E7294b8209d61EC134F8aEE77d3D0",
       },
       chainId: 84009,
       decimals: 18,
