@@ -23,22 +23,6 @@ export const onematrix: Chain = defineChain({
   testnet: true,
 })
 
-export const onematrixTestnet: Chain = defineChain({
-  blockExplorers: {
-    default: { name: "OneMatrix Testnet Explorer", url: "https://explorer.vietcha.in/" },
-  },
-  iconUrl: "https://eth.blockscout.com/assets/favicon/favicon.ico",
-  id: 84009,
-  name: "OneMatrix",
-  nativeCurrency: { decimals: 18, name: "MTX", symbol: "MTX" },
-  rpcUrls: {
-    default: {
-      http: ["https://rpc.vietcha.in/"],
-    },
-  },
-  testnet: true,
-})
-
 export const onematrixL2: Chain = defineChain({
   blockExplorers: {
     default: { name: "OneMatrix Explorer", url: "https://devnet-l2-explorer.hiee.us" },
@@ -67,12 +51,6 @@ export const getPublicClient = (chainId: number) => {
     case 84004:
       return createPublicClient({
         chain: onematrix,
-        transport: http(),
-      })
-
-    case 84009:
-      return createPublicClient({
-        chain: onematrixTestnet,
         transport: http(),
       })
 
