@@ -1,7 +1,6 @@
 import { Button, Center, Drawer, Flex, Stack, Text } from "@chakra-ui/react"
 import { JSX, ReactNode, useState } from "react"
 import { MdMenu } from "react-icons/md"
-import { RxOpenInNewWindow } from "react-icons/rx"
 import { Link, LinkProps, useLocation } from "react-router"
 import { privateRoute } from "routes"
 
@@ -41,18 +40,7 @@ const MenuItem = ({ linkProps, name, path }: MenuItemProps) => {
 const MenuItems = () => {
   return (
     <>
-      <MenuItem {...privateRoute.transfer} />
-      <MenuItem {...privateRoute.bridge} />
-      <MenuItem {...privateRoute.multiSign} />
-      <MenuItem
-        linkProps={{ target: "_blank" }}
-        name={
-          <Flex gap={1}>
-            Swap <RxOpenInNewWindow />
-          </Flex>
-        }
-        path="https://one-matrix-uni-v2-interface.pages.dev"
-      />
+      <MenuItem {...privateRoute.swap} />
     </>
   )
 }

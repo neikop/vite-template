@@ -2,15 +2,10 @@ type Address = `0x${string}`
 
 type Token = {
   address: Address
-  bridges?: Record<number, Address>
-  chainId: number
-  decimals: number
-  intent?: {
-    handler: Address
-    isc: Address
-  }
-  isImport?: boolean
+  chainId?: number
+  decimals?: number
   logoURI: string
   name: string
+  price: number
   symbol: string
 }

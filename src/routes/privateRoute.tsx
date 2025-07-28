@@ -1,33 +1,21 @@
-import { Bridge } from "views/Bridge"
 import { Guide } from "views/Component"
-import { MultiSign } from "views/MultiSign"
-import { Transfer } from "views/Transfer"
+import { Swap } from "views/Swap"
 
 const privateRoute = {
-  bridge: {
-    component: Bridge,
-    name: "Bridge",
-    path: "/bridge",
-  },
   guide: {
     component: Guide,
     name: "Component",
     path: "/component",
   },
   home: {
-    component: Bridge,
-    name: "Bridge",
-    path: "/bridge",
+    component: Swap,
+    name: "Swap",
+    path: "/swap",
   },
-  multiSign: {
-    component: MultiSign,
-    name: "Vault",
-    path: "/vault",
-  },
-  transfer: {
-    component: Transfer,
-    name: "Transfer",
-    path: "/transfer",
+  swap: {
+    component: Swap,
+    name: "Swap",
+    path: "/swap",
   },
 }
 

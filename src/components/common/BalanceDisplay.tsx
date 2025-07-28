@@ -1,8 +1,7 @@
 import { Button, Flex, Text } from "@chakra-ui/react"
 import { Chain } from "@rainbow-me/rainbowkit"
 import { useQuery } from "@tanstack/react-query"
-import { ERC20Abi } from "contracts/abis"
-import { createPublicClient, formatEther, http } from "viem"
+import { createPublicClient, erc20Abi, formatEther, http } from "viem"
 import { useAccount } from "wagmi"
 
 type Props = {
@@ -23,7 +22,7 @@ const BalanceDisplay = ({ address: addressFromProps, chain, onMax, token }: Prop
       transport: http(),
     })
     const balance = await publicClient.readContract({
-      abi: ERC20Abi,
+      abi: erc20Abi,
       address: token.address,
       args: [address],
       functionName: "balanceOf",
